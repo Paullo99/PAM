@@ -18,6 +18,9 @@ class MainActivity : AppCompatActivity() {
         buttonExit.setOnClickListener {
             finish()
         }
+
+        //Example use of Log
+        //Log.i("Tag", "Message")
     }
 
     override fun onStart() {
@@ -53,5 +56,10 @@ class MainActivity : AppCompatActivity() {
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         Toast.makeText(this, "onSaveInstanceState", duration).show()
+    }
+
+    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
+        super.onRestoreInstanceState(savedInstanceState)
+        Toast.makeText(this, "onRestoreInstanceState", duration).show()
     }
 }
