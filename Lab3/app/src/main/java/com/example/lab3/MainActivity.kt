@@ -1,64 +1,76 @@
 package com.example.lab3
 
-import androidx.appcompat.app.AppCompatActivity
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.util.Log
 import android.view.View
-import android.widget.EditText
-import android.widget.TextView
-import android.widget.Toast
+import android.view.inputmethod.InputMethodManager
+import android.widget.*
+import androidx.appcompat.app.AppCompatActivity
+import kotlin.math.roundToInt
 
 class MainActivity : AppCompatActivity() {
 
-    private lateinit var firstNumberTextField: EditText
-    private lateinit var secondNumberTextField:EditText
-    private lateinit var resultTextView: TextView
+    private lateinit var amountTextField: EditText
+    private lateinit var maxTipTextField:EditText
+    private lateinit var totalAmountTextView: TextView
+    private lateinit var tipTextView: TextView
+    private lateinit var serviceQualityBar: RatingBar
+    private lateinit var foodQualityBar: SeekBar
+    @SuppressLint("UseSwitchCompatOrMaterialCode")
+    private lateinit var roundTipSwitch: Switch
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        firstNumberTextField = findViewById(R.id.firstNumberTextField)
-        secondNumberTextField = findViewById(R.id.secondNumberTextField)
-        resultTextView = findViewById(R.id.resultTextView)
+        amountTextField = findViewById(R.id.amountTextField)
+        maxTipTextField = findViewById(R.id.maxTipTextField)
+        totalAmountTextView = findViewById(R.id.totalAmountTextView)
+        tipTextView = findViewById(R.id.tipTextView)
+        serviceQualityBar = findViewById(R.id.serviceQualityBar)
+        foodQualityBar = findViewById(R.id.foodQualityBar)
+        roundTipSwitch = findViewById(R.id.roundTipSwitch)
     }
 
-    fun add(view : View?){
-        if(firstNumberTextField.text.toString() != "" && secondNumberTextField.text.toString() != "") {
-            val result = firstNumberTextField.text.toString().toDouble() + secondNumberTextField.text.toString().toDouble()
-            resultTextView.text = result.toString()
-            Log.i("Lab3", "Dodawanie powiodło się")
+    @SuppressLint("SetTextI18n")
+    fun calculateTip(view : View?){
+        if(amountTextField.text.toString() != "" && maxTipTextField.text.toString() != ""){
+            val amount = amountTextField.text.toString().toDouble()
+            val maxTip = maxTipTextField.text.toString().toDouble() / 100
+
+            val maxServiceRating = serviceQualityBar.numStars
+            val maxFoodRating = foodQualityBar.max
+
+            val currentServiceRating = serviceQualityBar.rating
+            val currentFoodRating = foodQualityBar.progress
+
+            val serviceRating = currentServiceRating / maxServiceRating
+            val foodRating = currentFoodRating.toDouble() / maxFoodRating
+
+            val tip = maxTip * amount * serviceRating * foodRating
+            val totalAmount = amount + tip
+
+            if(roundTipSwitch.isChecked){
+                tipTextView.text = tip.roundToInt().toString() + " zł"
+                totalAmountTextView.text = totalAmount.roundToInt().toString() + " zł"
+            }else {
+                tipTextView.text = ((tip * 100).roundToInt() / 100.0).toString() + " zł"
+                totalAmountTextView.text = ((totalAmount * 100).roundToInt() / 100.0).toString() + " zł"
+            }
         }
-        else
-            Toast.makeText(this, "Wprowadź wszystkie potrzebne wartości!", Toast.LENGTH_LONG).show()
+        else {
+            Toast.makeText(this, "Wprowadź wszystkie dane!", Toast.LENGTH_SHORT).show()
+            tipTextView.text = ""
+            totalAmountTextView.text = ""
+        }
+
+        // Schowanie klawiatury po wciśnięciu przycisku
+        try {
+            val imm = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
+            imm.hideSoftInputFromWindow(currentFocus!!.windowToken, 0)
+        } catch (e: Exception) {
+            Log.i("Lab3", "Error: $e")
+        }
     }
 
-    fun sub(view : View?){
-        if(firstNumberTextField.text.toString() != "" && secondNumberTextField.text.toString() != "") {
-            val result = firstNumberTextField.text.toString().toDouble() - secondNumberTextField.text.toString().toDouble()
-            resultTextView.text = result.toString()
-            Log.i("Lab3", "Odejmowanie powiodło się")
-        }
-        else
-            Toast.makeText(this, "Wprowadź wszystkie potrzebne wartości!", Toast.LENGTH_LONG).show()
-    }
-
-    fun mul(view : View?){
-        if(firstNumberTextField.text.toString() != "" && secondNumberTextField.text.toString() != "") {
-            val result = firstNumberTextField.text.toString().toDouble() * secondNumberTextField.text.toString().toDouble()
-            resultTextView.text = result.toString()
-            Log.i("Lab3", "Mnożenie powiodło się")
-        }
-        else
-            Toast.makeText(this, "Wprowadź wszystkie potrzebne wartości!", Toast.LENGTH_LONG).show()
-    }
-
-    fun div(view : View?){
-        if(firstNumberTextField.text.toString() != "" && secondNumberTextField.text.toString() != "") {
-            val result = firstNumberTextField.text.toString().toDouble() / secondNumberTextField.text.toString().toDouble()
-            resultTextView.text = result.toString()
-            Log.i("Lab3", "Dodawanie powiodło się")
-        }
-        else
-            Toast.makeText(this, "Wprowadź wszystkie potrzebne wartości!", Toast.LENGTH_LONG).show()
-    }
 }
