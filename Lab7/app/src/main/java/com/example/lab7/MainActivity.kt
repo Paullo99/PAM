@@ -4,8 +4,8 @@ import android.annotation.SuppressLint
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
+import android.widget.Button
 import android.widget.EditText
-import android.widget.TextView
 import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import com.example.lab7.adapter.ItemAdapter
@@ -13,61 +13,87 @@ import com.example.lab7.adapter.ItemAdapter
 class MainActivity : AppCompatActivity() {
 
     private lateinit var nameEditText: EditText
-    private lateinit var quantityEditText: EditText
-    private lateinit var resultTextView: TextView
+    private lateinit var specialisationEditText: EditText
     private lateinit var recyclerView: RecyclerView
+    private lateinit var amountOfStudentsEditText: EditText
+    private lateinit var editButton: Button
 
-    private lateinit var dbHandler : MyDBHandler
+    private lateinit var dbHandler: MyDBHandler
+
+    private lateinit var fieldOfStudyFound: FieldOfStudy
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         nameEditText = findViewById(R.id.nameEditText)
-        quantityEditText = findViewById(R.id.quantityEditText)
-        resultTextView = findViewById(R.id.resultTextView)
+        specialisationEditText = findViewById(R.id.specialisationEditText)
         recyclerView = findViewById(R.id.recyclerView)
+        amountOfStudentsEditText = findViewById(R.id.amountOfStudentsEditText)
+        editButton = findViewById(R.id.editButton)
+        editButton.isEnabled = false
 
         dbHandler = MyDBHandler(this, null, null, 1)
-        val products = dbHandler.findAllProducts()
-        recyclerView.adapter = ItemAdapter(this, products)
+        val fieldsOfStudy = dbHandler.findAllFieldsOfStudy()
+        recyclerView.adapter = ItemAdapter(this, fieldsOfStudy)
     }
 
 
     @SuppressLint("NotifyDataSetChanged")
-    fun newProduct(view: View) {
+    fun newFieldOfStudy(view: View) {
 
-        if(quantityEditText.text.toString().equals("") || nameEditText.text.toString().equals("")){
+        if (specialisationEditText.text.toString() == "" || nameEditText.text.toString() == ""
+            || amountOfStudentsEditText.text.toString() == ""
+        ) {
             Toast.makeText(this, "Wprowadź wszystkie dane!", Toast.LENGTH_SHORT).show()
             return
         }
 
-        val quantity = Integer.parseInt(quantityEditText.text.toString().trim())
-        val product = Product(nameEditText.text.toString().trim(), quantity)
+        val amountOfStudents = Integer.parseInt(amountOfStudentsEditText.text.toString().trim())
+        val fieldOfStudy = FieldOfStudy(
+            nameEditText.text.toString().trim(),
+            specialisationEditText.text.toString().trim(),
+            amountOfStudents
+        )
 
-        dbHandler.addProduct(product)
+        dbHandler.addFieldOfStudy(fieldOfStudy)
         nameEditText.setText("")
-        quantityEditText.setText("")
+        specialisationEditText.setText("")
+        amountOfStudentsEditText.setText("")
         recyclerView.adapter?.notifyDataSetChanged()
     }
 
-    fun lookupProduct(view: View) {
-        val product = dbHandler.findProduct(nameEditText.text.toString().trim())
+    fun lookupFieldOfStudy(view: View) {
+        fieldOfStudyFound = dbHandler.findFieldOfStudy(nameEditText.text.toString().trim())!!
 
-        if (product != null)
-            resultTextView.text = product.toString()
-        else
-            Toast.makeText(this, "Nie ma takiego produktu", Toast.LENGTH_SHORT).show()
+        specialisationEditText.setText(fieldOfStudyFound.specialisation)
+        amountOfStudentsEditText.setText(fieldOfStudyFound.amountOfStudents.toString())
+        editButton.isEnabled = true
     }
 
     @SuppressLint("NotifyDataSetChanged")
-    fun removeProduct(view: View) {
-        val result = dbHandler.deleteProduct(nameEditText.text.toString().trim())
+    fun editFieldOfStudy(view: View) {
+        val fieldOfStudyEdited = FieldOfStudy(
+            fieldOfStudyFound.id,
+            nameEditText.text.toString(), specialisationEditText.text.toString(),
+            Integer.parseInt(amountOfStudentsEditText.text.toString())
+        )
+        dbHandler.editFieldOfStudy(fieldOfStudyEdited)
+        nameEditText.setText("")
+        specialisationEditText.setText("")
+        amountOfStudentsEditText.setText("")
+        recyclerView.adapter?.notifyDataSetChanged()
+        editButton.isEnabled = false
+    }
+
+    @SuppressLint("NotifyDataSetChanged")
+    fun removeFieldOfStudy(view: View) {
+        val result = dbHandler.deleteFieldOfStudy(nameEditText.text.toString().trim())
 
         if (result) {
             nameEditText.setText("")
-            quantityEditText.setText("")
+            specialisationEditText.setText("")
             recyclerView.adapter?.notifyDataSetChanged()
         } else
-            Toast.makeText(this, "Nie ma takiego produktu", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "Nie ma takiego kierunku", Toast.LENGTH_SHORT).show()
     }
 }

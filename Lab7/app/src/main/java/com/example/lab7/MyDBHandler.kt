@@ -1,9 +1,10 @@
 package com.example.lab7
 
+import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
-import android.content.Context
-import android.content.ContentValues
+import android.util.Log
+
 
 class MyDBHandler(
     context: Context, name: String?,
@@ -11,92 +12,117 @@ class MyDBHandler(
 ) : SQLiteOpenHelper(context, DATABASE_NAME, factory, DATABASE_VERSION) {
 
     override fun onCreate(db: SQLiteDatabase) {
-        val CREATE_PRODUCTS_TABLE = ("CREATE TABLE " +
-                TABLE_PRODUCTS + "("
-                + COLUMN_ID + " INTEGER PRIMARY KEY," +
-                COLUMN_PRODUCTNAME
-                + " TEXT," + COLUMN_QUANTITY + " INTEGER" + ")")
-        db.execSQL(CREATE_PRODUCTS_TABLE)
+        val CREATE_FIELDS_OF_STUDY_TABLE = ("CREATE TABLE " +
+                TABLE_FIELD_OF_STUDY + "("
+                + COLUMN_ID + " INTEGER PRIMARY KEY,"
+                + COLUMN_FIELD_OF_STUDY_NAME + " TEXT,"
+                + COLUMN_SPECIALISATION + " TEXT,"
+                + COLUMN_AMOUNT_OF_STUDENTS + " INTEGER" + ")")
+        db.execSQL(CREATE_FIELDS_OF_STUDY_TABLE)
+        db.execSQL("INSERT INTO $TABLE_FIELD_OF_STUDY ($COLUMN_FIELD_OF_STUDY_NAME, $COLUMN_SPECIALISATION, $COLUMN_AMOUNT_OF_STUDENTS) " +
+                "VALUES (\"Informatyka Techniczna\",\"INS \nISK\", 90)")
+        db.execSQL("INSERT INTO $TABLE_FIELD_OF_STUDY ($COLUMN_FIELD_OF_STUDY_NAME, $COLUMN_SPECIALISATION, $COLUMN_AMOUNT_OF_STUDENTS) " +
+                "VALUES (\"Informatyka Algorytmiczna\",\"CE \nALG\", 20)")
+        db.execSQL("INSERT INTO $TABLE_FIELD_OF_STUDY ($COLUMN_FIELD_OF_STUDY_NAME, $COLUMN_SPECIALISATION, $COLUMN_AMOUNT_OF_STUDENTS) " +
+                "VALUES (\"Telekomunikacja\",\"TIM \nTSM\", 40)")
+        db.execSQL("INSERT INTO $TABLE_FIELD_OF_STUDY ($COLUMN_FIELD_OF_STUDY_NAME, $COLUMN_SPECIALISATION, $COLUMN_AMOUNT_OF_STUDENTS) " +
+                "VALUES (\"Informatyka Stosowana\",\"IO\nPSI\nZSTI\", 40)")
     }
 
     override fun onUpgrade(
         db: SQLiteDatabase, oldVersion: Int,
         newVersion: Int
     ) {
-        db.execSQL("DROP TABLE IF EXISTS $TABLE_PRODUCTS")
+        db.execSQL("DROP TABLE IF EXISTS $TABLE_FIELD_OF_STUDY")
         onCreate(db)
     }
 
     companion object {
 
         private val DATABASE_VERSION = 1
-        private val DATABASE_NAME = "productDB.db"
-        val TABLE_PRODUCTS = "products"
+        private val DATABASE_NAME = "studyDB.db"
+        val TABLE_FIELD_OF_STUDY = "fieldOfStudy"
 
         val COLUMN_ID = "_id"
-        val COLUMN_PRODUCTNAME = "productname"
-        val COLUMN_QUANTITY = "quantity"
+        val COLUMN_FIELD_OF_STUDY_NAME = "fieldOfStudyName"
+        val COLUMN_SPECIALISATION = "specialisation"
+        val COLUMN_AMOUNT_OF_STUDENTS = "amountOfStudents"
     }
 
-    fun addProduct(product: Product) {
-
-        val values = ContentValues()
-        values.put(COLUMN_PRODUCTNAME, product.productName)
-        values.put(COLUMN_QUANTITY, product.quantity)
-
+    fun addFieldOfStudy(fieldOfStudy: FieldOfStudy) {
         val db = this.writableDatabase
+        val stmt =
+            db.compileStatement("INSERT INTO $TABLE_FIELD_OF_STUDY (fieldOfStudyName, specialisation, amountOfStudents) VALUES (?, ?, ?)")
 
-        db.insert(TABLE_PRODUCTS, null, values)
+        stmt.bindString(1, fieldOfStudy.fieldOfStudyName)
+        stmt.bindString(2, fieldOfStudy.specialisation)
+        stmt.bindLong(3, fieldOfStudy.amountOfStudents.toLong())
+
+        stmt.executeInsert()
         db.close()
     }
 
-    fun findProduct(productName: String): Product? {
+    fun findFieldOfStudy(fieldOfStudyName: String): FieldOfStudy? {
         val query =
-            "SELECT * FROM $TABLE_PRODUCTS WHERE $COLUMN_PRODUCTNAME =  \"$productName\""
+            "SELECT * FROM $TABLE_FIELD_OF_STUDY WHERE $COLUMN_FIELD_OF_STUDY_NAME =  \"$fieldOfStudyName\""
 
         val db = this.readableDatabase
 
         val cursor = db.rawQuery(query, null)
 
-        var product: Product? = null
+        var fieldOfStudy: FieldOfStudy? = null
 
         if (cursor.moveToFirst()) {
-//            cursor.moveToFirst()
-
             val id = Integer.parseInt(cursor.getString(0))
             val name = cursor.getString(1)
-            val quantity = Integer.parseInt(cursor.getString(2))
-            product = Product(id, name, quantity)
+            val specialisation = cursor.getString(2)
+            val amountOfStudents = Integer.parseInt(cursor.getString(3))
+            fieldOfStudy = FieldOfStudy(id, name, specialisation, amountOfStudents)
             cursor.close()
         }
 
         db.close()
-        return product
+        return fieldOfStudy
     }
 
-    fun findAllProducts(): ArrayList<Product> {
-        val resultList = ArrayList<Product>()
-        val query = "SELECT * FROM $TABLE_PRODUCTS"
+    fun editFieldOfStudy(fieldOfStudy: FieldOfStudy) {
+        val query =
+            "UPDATE $TABLE_FIELD_OF_STUDY SET $COLUMN_FIELD_OF_STUDY_NAME = \"${fieldOfStudy.fieldOfStudyName}\", " +
+                    "$COLUMN_SPECIALISATION = \"${fieldOfStudy.specialisation}\"," +
+                    "$COLUMN_AMOUNT_OF_STUDENTS = \"${fieldOfStudy.amountOfStudents}\"" +
+                    " WHERE $COLUMN_ID = \"${fieldOfStudy.id}\""
+        println(query)
+        val db = this.writableDatabase
+        db.execSQL(query)
+        db.close()
+
+        db.close()
+    }
+
+    fun findAllFieldsOfStudy(): ArrayList<FieldOfStudy> {
+        val resultList = ArrayList<FieldOfStudy>()
+        val query = "SELECT * FROM $TABLE_FIELD_OF_STUDY"
         val db = this.readableDatabase
         val cursor = db.rawQuery(query, null)
         while (cursor.moveToNext()) {
             val id = Integer.parseInt(cursor.getString(0))
             val name = cursor.getString(1)
-            val quantity = Integer.parseInt(cursor.getString(2))
-            val product = Product(id, name, quantity)
-            resultList.add(product)
+            val specialisation = cursor.getString(2)
+            val amountOfStudents = Integer.parseInt(cursor.getString(3))
+            val fieldOfStudy = FieldOfStudy(id, name, specialisation, amountOfStudents)
+            resultList.add(fieldOfStudy)
         }
         cursor.close()
         db.close()
         return resultList
     }
 
-    fun deleteProduct(productName: String): Boolean {
+    fun deleteFieldOfStudy(fieldOfStudyName: String): Boolean {
 
         var result = false
 
         val query =
-            "SELECT * FROM $TABLE_PRODUCTS WHERE $COLUMN_PRODUCTNAME = \"$productName\""
+            "SELECT * FROM $TABLE_FIELD_OF_STUDY WHERE $COLUMN_FIELD_OF_STUDY_NAME = \"$fieldOfStudyName\""
 
         val db = this.writableDatabase
 
@@ -105,7 +131,7 @@ class MyDBHandler(
         if (cursor.moveToFirst()) {
             val id = Integer.parseInt(cursor.getString(0))
             db.delete(
-                TABLE_PRODUCTS, "$COLUMN_ID = ?",
+                TABLE_FIELD_OF_STUDY, "$COLUMN_ID = ?",
                 arrayOf(id.toString())
             )
             cursor.close()
