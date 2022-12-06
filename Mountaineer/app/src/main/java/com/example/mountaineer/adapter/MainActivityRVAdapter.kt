@@ -6,21 +6,29 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.example.mountaineer.MainActivity
 import com.example.mountaineer.R
 import com.example.mountaineer.model.MountainExpedition
 
-class MainActivityRVAdapter(private val context: Context, private val dataset: List<MountainExpedition>) :
+class MainActivityRVAdapter(private val dataset: List<MountainExpedition>, val onItemClickListener: OnItemClickListener) :
     RecyclerView.Adapter<MainActivityRVAdapter.ItemViewHolder>() {
 
-    class ItemViewHolder(private val view: View) : RecyclerView.ViewHolder(view) {
+    class ItemViewHolder(private val view: View, listener: OnItemClickListener) : RecyclerView.ViewHolder(view) {
         val mountainNameTextView: TextView = view.findViewById(R.id.mountainNameTextView)
         val conquerDateTextView: TextView = view.findViewById(R.id.conquerDateTextView)
+
+        init{
+            itemView.setOnClickListener {
+                listener.onItemClick(adapterPosition)
+            }
+        }
     }
+
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ItemViewHolder {
         val adapterLayout = LayoutInflater.from(parent.context)
             .inflate(R.layout.list_item_main_activity, parent, false)
-        return ItemViewHolder(adapterLayout)
+        return ItemViewHolder(adapterLayout, onItemClickListener)
     }
 
     override fun onBindViewHolder(holder: ItemViewHolder, position: Int) {
