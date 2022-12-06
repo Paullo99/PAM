@@ -6,17 +6,17 @@
     android:layout_height="wrap_content">
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:layout_marginBottom="10dp"
-        android:layout_marginTop="10dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@drawable/item_background">
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="10dp"
+        android:background="@drawable/item_background"
+        android:paddingVertical="20dp">
 
         <TextView
             android:id="@+id/conquerDateTextView"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="5dp"
             android:layout_marginEnd="5dp"
             android:textSize="18sp"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -25,17 +25,17 @@
             app:layout_constraintHorizontal_weight="1.5"
             app:layout_constraintStart_toEndOf="@+id/mountainNameTextView"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.0" />
+            app:layout_constraintVertical_bias="0.333" />
 
         <TextView
             android:id="@+id/mountainNameTextView"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_marginStart="10dp"
-            android:layout_marginTop="5dp"
             android:layout_marginEnd="10dp"
-            android:textSize="18sp"
+            android:textSize="20sp"
             android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/conquerDateTextView"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintHorizontal_weight="2.5"
