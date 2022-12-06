@@ -5,6 +5,7 @@ import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
+import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.recyclerview.widget.RecyclerView
 import androidx.room.Room
@@ -40,16 +41,21 @@ class MainActivity : AppCompatActivity(), OnItemClickListener {
     }
 
     fun add(view: View?) {
-        val expedition = MountainExpedition(mountainName = "Rysy$counter", conquerDate = "2022-12-1$counter")
+        addNewExpedition()
+//        val expedition = MountainExpedition(mountainName = "Rysy$counter", conquerDate = "2022-12-1$counter")
+//
+//        runBlocking {
+//            mountainExpeditionDao.insert(expedition)
+//            mountainExpeditionList = mountainExpeditionDao.getAllMountainExpeditions()
+//            recyclerView.swapAdapter(MainActivityRVAdapter(mountainExpeditionList, this@MainActivity), false);
+//            recyclerView.scrollToPosition(mountainExpeditionList.size-1)
+//        }
+//
+//        counter++
+    }
 
-        runBlocking {
-            mountainExpeditionDao.insert(expedition)
-            mountainExpeditionList = mountainExpeditionDao.getAllMountainExpeditions()
-            recyclerView.swapAdapter(MainActivityRVAdapter(mountainExpeditionList, this@MainActivity), false);
-            recyclerView.scrollToPosition(mountainExpeditionList.size-1)
-        }
-
-        counter++
+    override fun onItemClick(position: Int) {
+        getSelectedExpedition(mountainExpeditionList[position].id)
     }
 
     private fun getSelectedExpedition(id: Int) {
@@ -58,7 +64,6 @@ class MainActivity : AppCompatActivity(), OnItemClickListener {
         detailedExpeditionActivityLauncher.launch(intent)
     }
 
-    //Receiver
     private val detailedExpeditionActivityLauncher = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
     ) {
@@ -67,8 +72,24 @@ class MainActivity : AppCompatActivity(), OnItemClickListener {
         }
     }
 
-    override fun onItemClick(position: Int) {
-        getSelectedExpedition(mountainExpeditionList[position].id)
+    private fun addNewExpedition() {
+        val intent = Intent(this, AddExpeditionActivity::class.java)
+        addNewExpeditionExpeditionActivityLauncher.launch(intent)
+    }
+
+    private val addNewExpeditionExpeditionActivityLauncher = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) {
+        if (it.resultCode == Activity.RESULT_OK) {
+            Toast.makeText(this, "Dodano nowy zdobyty szczyt!", Toast.LENGTH_SHORT).show()
+            runBlocking {
+                mountainExpeditionList = mountainExpeditionDao.getAllMountainExpeditions()
+            }
+            recyclerView.swapAdapter(MainActivityRVAdapter(mountainExpeditionList, this@MainActivity), false);
+            recyclerView.scrollToPosition(mountainExpeditionList.size-1)
+        } else {
+            Toast.makeText(this, "Nie dodano nowego zdobytego szczytu.", Toast.LENGTH_SHORT).show()
+        }
     }
 
 

@@ -6,4 +6,88 @@
     android:layout_height="match_parent"
     tools:context=".AddExpeditionActivity">
 
+    <EditText
+        android:id="@+id/mountainNameEditText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="30dp"
+        android:ems="10"
+        android:hint="Nazwa szczytu"
+        android:inputType="textPersonName"
+        android:minHeight="48dp"
+        android:textSize="18sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <EditText
+        android:id="@+id/mountainRangeEditText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="20dp"
+        android:ems="10"
+        android:hint="Pasmo górskie"
+        android:inputType="textPersonName"
+        android:minHeight="48dp"
+        android:textSize="18sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/mountainNameEditText" />
+
+    <EditText
+        android:id="@+id/mountainHeightEditText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="20dp"
+        android:ems="10"
+        android:hint="Wysokość n.p.m."
+        android:inputType="numberSigned"
+        android:minHeight="48dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/mountainRangeEditText" />
+
+    <Button
+        android:id="@+id/addNewExpeditionButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:onClick="addNewExpedition"
+        android:text="Dodaj"
+        android:textSize="18sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/conquerDateEditText" />
+
+    <TextView
+        android:id="@+id/conquerDateEditText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="20dp"
+        android:ems="10"
+        android:gravity="center_vertical"
+        android:hint="Data zdobycia szczytu"
+        android:minHeight="48dp"
+        android:textSize="18sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/mountainHeightEditText" />
+
+    <Button
+        android:id="@+id/changeDateButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:onClick="changeDate"
+        android:text="Zmień datę"
+        android:textSize="12sp"
+        app:layout_constraintBottom_toBottomOf="@+id/conquerDateEditText"
+        app:layout_constraintStart_toEndOf="@+id/conquerDateEditText"
+        app:layout_constraintTop_toTopOf="@+id/conquerDateEditText" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

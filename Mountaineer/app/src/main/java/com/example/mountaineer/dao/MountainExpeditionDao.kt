@@ -11,6 +11,9 @@ interface MountainExpeditionDao {
     @Query("SELECT * FROM mountain_expedition")
     suspend fun getAllMountainExpeditions(): List<MountainExpedition>
 
+    @Query("SELECT * FROM mountain_expedition WHERE id = :id")
+    suspend fun getMountainExpeditionById(id: Int): MountainExpedition
+
     @Insert
     suspend fun insert(expedition: MountainExpedition)
 }
