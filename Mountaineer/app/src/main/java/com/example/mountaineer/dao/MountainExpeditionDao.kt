@@ -9,8 +9,8 @@ import com.example.mountaineer.model.MountainExpedition
 interface MountainExpeditionDao {
 
     @Query("SELECT * FROM mountain_expedition")
-    fun getAllMountainExpeditions(): List<MountainExpedition>
+    suspend fun getAllMountainExpeditions(): List<MountainExpedition>
 
     @Insert
-    fun insert(expedition: MountainExpedition)
+    suspend fun insert(expedition: MountainExpedition)
 }

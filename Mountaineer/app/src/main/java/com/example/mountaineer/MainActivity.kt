@@ -7,6 +7,9 @@ import androidx.room.Room
 import com.example.mountaineer.dao.MountainExpeditionDao
 import com.example.mountaineer.database.AppDatabase
 import com.example.mountaineer.model.MountainExpedition
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 
 class MainActivity : AppCompatActivity() {
 
@@ -20,8 +23,7 @@ class MainActivity : AppCompatActivity() {
         val db = Room.databaseBuilder(
             applicationContext,
             AppDatabase::class.java, "mountaineer-database"
-        ).allowMainThreadQueries()
-            .build()
+        ).build()
 
         mountainExpeditionDao = db.mountainExpeditionDao()
 
@@ -29,14 +31,18 @@ class MainActivity : AppCompatActivity() {
 
     fun add(view: View?) {
         val expedition = MountainExpedition(mountainName = "Rysy$counter")
-        mountainExpeditionDao.insert(expedition)
+
+        runBlocking {
+            mountainExpeditionDao.insert(expedition)
+        }
         counter++
     }
 
     fun viewExpeditions(view: View?) {
-        val x = mountainExpeditionDao.getAllMountainExpeditions()
-
-        for (y in x)
-            println(y)
+        runBlocking {
+            val x = mountainExpeditionDao.getAllMountainExpeditions()
+            for (y in x)
+                println(y)
+        }
     }
 }
