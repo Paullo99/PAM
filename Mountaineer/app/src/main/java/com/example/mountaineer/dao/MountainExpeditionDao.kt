@@ -1,6 +1,7 @@
 package com.example.mountaineer.dao
 
 import androidx.room.Dao
+import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
 import com.example.mountaineer.model.MountainExpedition
@@ -16,4 +17,7 @@ interface MountainExpeditionDao {
 
     @Insert
     suspend fun insert(expedition: MountainExpedition)
+
+    @Delete
+    suspend fun delete(expedition: MountainExpedition)
 }

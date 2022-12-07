@@ -67,8 +67,12 @@ class MainActivity : AppCompatActivity(), OnItemClickListener {
     private val detailedExpeditionActivityLauncher = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
     ) {
-        if (it.resultCode == Activity.RESULT_OK) {
-            println("Welcome back")
+        if (it.resultCode == Activity.RESULT_OK && it.data?.extras?.get("deleted")!=null) {
+            runBlocking {
+                mountainExpeditionList = mountainExpeditionDao.getAllMountainExpeditions()
+            }
+            recyclerView.swapAdapter(MainActivityRVAdapter(mountainExpeditionList, this@MainActivity), false)
+            Toast.makeText(this, "Usunięto zdobyty szczyt", Toast.LENGTH_SHORT).show()
         }
     }
 
