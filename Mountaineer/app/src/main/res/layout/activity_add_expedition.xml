@@ -62,8 +62,7 @@
         android:textSize="18sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/conquerDateEditText" />
+        app:layout_constraintStart_toStartOf="parent" />
 
     <TextView
         android:id="@+id/conquerDateEditText"
@@ -89,5 +88,19 @@
         app:layout_constraintBottom_toBottomOf="@+id/conquerDateEditText"
         app:layout_constraintStart_toEndOf="@+id/conquerDateEditText"
         app:layout_constraintTop_toTopOf="@+id/conquerDateEditText" />
+
+    <ImageView
+        android:id="@+id/photoImageView"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginTop="10dp"
+        android:onClick="takePhoto"
+        app:layout_constraintBottom_toTopOf="@+id/addNewExpeditionButton"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/conquerDateEditText"
+        app:layout_constraintVertical_bias="0.0"
+        app:srcCompat="@drawable/ic_baseline_insert_photo_24" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

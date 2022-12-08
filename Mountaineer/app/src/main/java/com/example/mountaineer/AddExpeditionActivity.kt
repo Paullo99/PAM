@@ -1,22 +1,36 @@
 package com.example.mountaineer
 
-import android.annotation.SuppressLint
+import android.Manifest
+import android.R.attr
+import android.app.Activity
 import android.app.DatePickerDialog
 import android.app.Dialog
-import androidx.appcompat.app.AppCompatActivity
+import android.content.Intent
+import android.content.pm.PackageManager
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.graphics.Matrix
+import android.media.ExifInterface
 import android.os.Bundle
+import android.provider.MediaStore
 import android.view.View
-import android.widget.DatePicker
-import android.widget.EditText
-import android.widget.TextView
-import android.widget.Toast
+import android.widget.*
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
+import androidx.core.content.FileProvider
 import androidx.fragment.app.DialogFragment
 import androidx.room.Room
 import com.example.mountaineer.dao.MountainExpeditionDao
 import com.example.mountaineer.database.AppDatabase
 import com.example.mountaineer.model.MountainExpedition
 import kotlinx.coroutines.runBlocking
+import java.io.File
+import java.text.SimpleDateFormat
 import java.util.*
+import kotlin.properties.Delegates
+
 
 class AddExpeditionActivity : AppCompatActivity() {
 
@@ -26,6 +40,10 @@ class AddExpeditionActivity : AppCompatActivity() {
     private lateinit var mountainHeightEditText: EditText
     private lateinit var conquerDateEditText: TextView
     private lateinit var calendar: Calendar
+    private lateinit var photoImageView: ImageView
+    private lateinit var photoFileName : String
+    private lateinit var photoFile: File
+    private var permission by Delegates.notNull<Int>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -36,12 +54,13 @@ class AddExpeditionActivity : AppCompatActivity() {
         mountainRangeEditText = findViewById(R.id.mountainRangeEditText)
         mountainHeightEditText = findViewById(R.id.mountainHeightEditText)
         conquerDateEditText = findViewById(R.id.conquerDateEditText)
+        photoImageView = findViewById(R.id.photoImageView)
 
         calendar = Calendar.getInstance()
 
         val todayDate = "%d-%02d-%02d".format(
             calendar.get(Calendar.YEAR),
-            calendar.get(Calendar.MONTH)+1,
+            calendar.get(Calendar.MONTH) + 1,
             calendar.get(Calendar.DAY_OF_MONTH)
         )
         conquerDateEditText.text = todayDate
@@ -74,16 +93,116 @@ class AddExpeditionActivity : AppCompatActivity() {
     }
 
     fun addNewExpedition(view: View?) {
+        if(checkIfAllInputsAreFilled()) {
         val mountainExpedition = MountainExpedition(
             mountainName = mountainNameEditText.text.toString(),
             mountainRange = mountainRangeEditText.text.toString(),
             mountainHeight = Integer.parseInt(mountainHeightEditText.text.toString()),
-            conquerDate = conquerDateEditText.text.toString()
+            conquerDate = conquerDateEditText.text.toString(),
+            photoFileName = photoFileName
         )
-        runBlocking {
-            mountainExpeditionDao.insert(mountainExpedition)
+            runBlocking {
+                mountainExpeditionDao.insert(mountainExpedition)
+            }
+            setResult(RESULT_OK)
+            finish()
+        }else {
+            Toast.makeText(this, "Nie wypełniono wszystkich danych", Toast.LENGTH_SHORT).show()
         }
-        setResult(RESULT_OK)
-        finish()
+    }
+
+    private fun checkIfAllInputsAreFilled(): Boolean {
+        return !mountainNameEditText.text.toString().equals("")
+                && !mountainRangeEditText.text.toString().equals("")
+                && !mountainHeightEditText.text.toString().equals("")
+                && !conquerDateEditText.text.toString().equals("")
+    }
+
+    fun takePhoto(view: View?) {
+        getPermissions()
+        val timeStamp: String = SimpleDateFormat("yyyyMMdd_HHmmss").format(Date())
+        photoFileName = "$timeStamp.jpg"
+        photoFile = File(getExternalFilesDir(null), photoFileName)
+        val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+        intent.putExtra(
+            MediaStore.EXTRA_OUTPUT, FileProvider.getUriForFile(
+                this, BuildConfig.APPLICATION_ID + ".provider",
+                photoFile
+            )
+        )
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
+            == PackageManager.PERMISSION_GRANTED
+        ) {
+            takePhotoIntentLauncher.launch(intent)
+        }
+    }
+
+
+    private val takePhotoIntentLauncher = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) {
+        if (it.resultCode == Activity.RESULT_OK) {
+            var bitmap = BitmapFactory.decodeFile(File(getExternalFilesDir(null), photoFileName).absolutePath)
+            val exif = ExifInterface(File(getExternalFilesDir(null), photoFileName).absolutePath)
+            val rotation = exif.getAttributeInt(
+                ExifInterface.TAG_ORIENTATION,
+                ExifInterface.ORIENTATION_NORMAL
+            )
+            val rotationInDegrees: Int = exifToDegrees(rotation)
+            val matrix = Matrix()
+            if (attr.rotation != 0)
+                matrix.preRotate(rotationInDegrees.toFloat())
+            bitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.width, bitmap.height, matrix, true)
+            photoImageView.setImageBitmap(bitmap)
+        }
+    }
+
+    private fun exifToDegrees(exifOrientation: Int): Int {
+        return when (exifOrientation) {
+            ExifInterface.ORIENTATION_ROTATE_90 -> 90
+            ExifInterface.ORIENTATION_ROTATE_180 -> 180
+            ExifInterface.ORIENTATION_ROTATE_270 -> 270
+            else -> 0
+        }
+    }
+
+    private fun getPermissions() {
+        permission = ContextCompat.checkSelfPermission(
+            this,
+            Manifest.permission.CAMERA
+        )
+
+        if (permission != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(
+                this,
+                arrayOf(Manifest.permission.CAMERA),
+                1
+            )
+        }
+
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        when (requestCode) {
+            1 -> {
+
+                if (grantResults.isEmpty() || grantResults[0] != PackageManager.PERMISSION_GRANTED) {
+
+                    Toast.makeText(
+                        this,
+                        "W celu zrobienia zdjęcia konieczne są uprawnienia.",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                } else {
+                    val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+                    takePhotoIntentLauncher.launch(intent)
+                }
+            }
+        }
     }
 }

@@ -3,10 +3,15 @@ package com.example.mountaineer
 import android.annotation.SuppressLint
 import android.content.DialogInterface
 import android.content.Intent
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.graphics.Matrix
+import android.media.ExifInterface
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
+import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
@@ -15,6 +20,7 @@ import com.example.mountaineer.dao.MountainExpeditionDao
 import com.example.mountaineer.database.AppDatabase
 import com.example.mountaineer.model.MountainExpedition
 import kotlinx.coroutines.runBlocking
+import java.io.File
 
 class DetailedExpeditionActivity : AppCompatActivity() {
 
@@ -25,6 +31,9 @@ class DetailedExpeditionActivity : AppCompatActivity() {
     private lateinit var mountainRangeTV: TextView
     private lateinit var heightTV: TextView
     private lateinit var dateTV: TextView
+    private lateinit var photoIV: ImageView
+    private lateinit var photoFile: File
+    private lateinit var photoFileName: String
 
     @SuppressLint("SetTextI18n")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -35,6 +44,7 @@ class DetailedExpeditionActivity : AppCompatActivity() {
         mountainRangeTV = findViewById(R.id.mountainRangeTV)
         heightTV = findViewById(R.id.heightTV)
         dateTV = findViewById(R.id.dateTV)
+        photoIV = findViewById(R.id.photoIV)
 
         val id = intent.getIntExtra("id",1)
 
@@ -52,6 +62,33 @@ class DetailedExpeditionActivity : AppCompatActivity() {
         mountainRangeTV.text = mountainExpedition.mountainRange
         heightTV.text = mountainExpedition.mountainHeight.toString() + " m n.p.m."
         dateTV.text = mountainExpedition.conquerDate
+        photoFileName = mountainExpedition.photoFileName
+        setImageView()
+    }
+
+    private fun setImageView(){
+        photoFile = File(getExternalFilesDir(null), photoFileName)
+        var bitmap = BitmapFactory.decodeFile(photoFile.absolutePath)
+        val exif = ExifInterface(photoFile.absolutePath)
+        val rotation = exif.getAttributeInt(
+            ExifInterface.TAG_ORIENTATION,
+            ExifInterface.ORIENTATION_NORMAL
+        )
+        val rotationInDegrees: Int = exifToDegrees(rotation)
+        val matrix = Matrix()
+        if (rotation != 0)
+            matrix.preRotate(rotationInDegrees.toFloat())
+        bitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.width, bitmap.height, matrix, true)
+        photoIV.setImageBitmap(bitmap)
+    }
+
+    private fun exifToDegrees(exifOrientation: Int): Int {
+        return when (exifOrientation) {
+            ExifInterface.ORIENTATION_ROTATE_90 -> 90
+            ExifInterface.ORIENTATION_ROTATE_180 -> 180
+            ExifInterface.ORIENTATION_ROTATE_270 -> 270
+            else -> 0
+        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {

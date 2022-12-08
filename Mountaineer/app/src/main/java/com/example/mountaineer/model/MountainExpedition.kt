@@ -11,7 +11,8 @@ data class MountainExpedition(
     @ColumnInfo(name = "mountain_name") val mountainName: String? = "",
     @ColumnInfo(name = "mountain_range") val mountainRange: String? = "",
     @ColumnInfo(name = "mountain_height") val mountainHeight: Int = 0,
-    @ColumnInfo(name = "conquer_date") val conquerDate: String? = null
+    @ColumnInfo(name = "conquer_date") val conquerDate: String? = null,
+    @ColumnInfo(name = "photo_file_name") val photoFileName: String = ""
 ) {
     override fun toString(): String {
         return "MountainExpedition(id=$id, mountainName=$mountainName, conquerDate=$conquerDate)"
