@@ -1,16 +1,11 @@
 package com.example.mountaineer
 
 import android.Manifest
-import android.R.attr
 import android.app.Activity
 import android.app.DatePickerDialog
 import android.app.Dialog
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
-import android.graphics.Matrix
-import android.media.ExifInterface
 import android.os.Bundle
 import android.provider.MediaStore
 import android.view.View
@@ -24,6 +19,7 @@ import androidx.fragment.app.DialogFragment
 import androidx.room.Room
 import com.example.mountaineer.dao.MountainExpeditionDao
 import com.example.mountaineer.database.AppDatabase
+import com.example.mountaineer.helper.ImageRotator
 import com.example.mountaineer.model.MountainExpedition
 import kotlinx.coroutines.runBlocking
 import java.io.File
@@ -41,7 +37,7 @@ class AddExpeditionActivity : AppCompatActivity() {
     private lateinit var conquerDateEditText: TextView
     private lateinit var calendar: Calendar
     private lateinit var photoImageView: ImageView
-    private lateinit var photoFileName : String
+    private lateinit var photoFileName: String
     private lateinit var photoFile: File
     private var permission by Delegates.notNull<Int>()
 
@@ -93,29 +89,29 @@ class AddExpeditionActivity : AppCompatActivity() {
     }
 
     fun addNewExpedition(view: View?) {
-        if(checkIfAllInputsAreFilled()) {
-        val mountainExpedition = MountainExpedition(
-            mountainName = mountainNameEditText.text.toString(),
-            mountainRange = mountainRangeEditText.text.toString(),
-            mountainHeight = Integer.parseInt(mountainHeightEditText.text.toString()),
-            conquerDate = conquerDateEditText.text.toString(),
-            photoFileName = photoFileName
-        )
+        if (checkIfAllInputsAreFilled()) {
+            val mountainExpedition = MountainExpedition(
+                mountainName = mountainNameEditText.text.toString(),
+                mountainRange = mountainRangeEditText.text.toString(),
+                mountainHeight = Integer.parseInt(mountainHeightEditText.text.toString()),
+                conquerDate = conquerDateEditText.text.toString(),
+                photoFileName = photoFileName
+            )
             runBlocking {
                 mountainExpeditionDao.insert(mountainExpedition)
             }
             setResult(RESULT_OK)
             finish()
-        }else {
+        } else {
             Toast.makeText(this, "Nie wypełniono wszystkich danych", Toast.LENGTH_SHORT).show()
         }
     }
 
     private fun checkIfAllInputsAreFilled(): Boolean {
-        return !mountainNameEditText.text.toString().equals("")
-                && !mountainRangeEditText.text.toString().equals("")
-                && !mountainHeightEditText.text.toString().equals("")
-                && !conquerDateEditText.text.toString().equals("")
+        return mountainNameEditText.text.toString() != ""
+                && mountainRangeEditText.text.toString() != ""
+                && mountainHeightEditText.text.toString() != ""
+                && conquerDateEditText.text.toString() != ""
     }
 
     fun takePhoto(view: View?) {
@@ -137,32 +133,13 @@ class AddExpeditionActivity : AppCompatActivity() {
         }
     }
 
-
     private val takePhotoIntentLauncher = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
     ) {
         if (it.resultCode == Activity.RESULT_OK) {
-            var bitmap = BitmapFactory.decodeFile(File(getExternalFilesDir(null), photoFileName).absolutePath)
-            val exif = ExifInterface(File(getExternalFilesDir(null), photoFileName).absolutePath)
-            val rotation = exif.getAttributeInt(
-                ExifInterface.TAG_ORIENTATION,
-                ExifInterface.ORIENTATION_NORMAL
-            )
-            val rotationInDegrees: Int = exifToDegrees(rotation)
-            val matrix = Matrix()
-            if (attr.rotation != 0)
-                matrix.preRotate(rotationInDegrees.toFloat())
-            bitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.width, bitmap.height, matrix, true)
-            photoImageView.setImageBitmap(bitmap)
-        }
-    }
-
-    private fun exifToDegrees(exifOrientation: Int): Int {
-        return when (exifOrientation) {
-            ExifInterface.ORIENTATION_ROTATE_90 -> 90
-            ExifInterface.ORIENTATION_ROTATE_180 -> 180
-            ExifInterface.ORIENTATION_ROTATE_270 -> 270
-            else -> 0
+            photoFile = File(getExternalFilesDir(null), photoFileName)
+            val imageRotator = ImageRotator()
+            photoImageView.setImageBitmap(imageRotator.getImageOriginalOrientation(photoFile))
         }
     }
 

@@ -1,23 +1,18 @@
 package com.example.mountaineer
 
 import android.annotation.SuppressLint
-import android.content.DialogInterface
 import android.content.Intent
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
-import android.graphics.Matrix
-import android.media.ExifInterface
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.ImageView
 import android.widget.TextView
-import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.room.Room
 import com.example.mountaineer.dao.MountainExpeditionDao
 import com.example.mountaineer.database.AppDatabase
+import com.example.mountaineer.helper.ImageRotator
 import com.example.mountaineer.model.MountainExpedition
 import kotlinx.coroutines.runBlocking
 import java.io.File
@@ -46,7 +41,7 @@ class DetailedExpeditionActivity : AppCompatActivity() {
         dateTV = findViewById(R.id.dateTV)
         photoIV = findViewById(R.id.photoIV)
 
-        val id = intent.getIntExtra("id",1)
+        val id = intent.getIntExtra("id", 1)
 
         val db = Room.databaseBuilder(
             applicationContext,
@@ -66,29 +61,10 @@ class DetailedExpeditionActivity : AppCompatActivity() {
         setImageView()
     }
 
-    private fun setImageView(){
+    private fun setImageView() {
         photoFile = File(getExternalFilesDir(null), photoFileName)
-        var bitmap = BitmapFactory.decodeFile(photoFile.absolutePath)
-        val exif = ExifInterface(photoFile.absolutePath)
-        val rotation = exif.getAttributeInt(
-            ExifInterface.TAG_ORIENTATION,
-            ExifInterface.ORIENTATION_NORMAL
-        )
-        val rotationInDegrees: Int = exifToDegrees(rotation)
-        val matrix = Matrix()
-        if (rotation != 0)
-            matrix.preRotate(rotationInDegrees.toFloat())
-        bitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.width, bitmap.height, matrix, true)
-        photoIV.setImageBitmap(bitmap)
-    }
-
-    private fun exifToDegrees(exifOrientation: Int): Int {
-        return when (exifOrientation) {
-            ExifInterface.ORIENTATION_ROTATE_90 -> 90
-            ExifInterface.ORIENTATION_ROTATE_180 -> 180
-            ExifInterface.ORIENTATION_ROTATE_270 -> 270
-            else -> 0
-        }
+        val imageRotator = ImageRotator()
+        photoIV.setImageBitmap(imageRotator.getImageOriginalOrientation(photoFile))
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -98,19 +74,19 @@ class DetailedExpeditionActivity : AppCompatActivity() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
 
-            if(item.itemId == R.id.deleteExpeditionButton){
-                val alertDialogBuilder = AlertDialog.Builder(this)
-                alertDialogBuilder.setMessage("Czy na pewno chcesz usunąć zdobyty szczyt?")
-                alertDialogBuilder.setPositiveButton("Tak"){ _, _ ->
-                    runBlocking {
-                        mountainExpeditionDao.delete(mountainExpedition)
-                    }
-                    setResult(RESULT_OK, Intent().putExtra("deleted", "true"))
-                    finish()
+        if (item.itemId == R.id.deleteExpeditionButton) {
+            val alertDialogBuilder = AlertDialog.Builder(this)
+            alertDialogBuilder.setMessage("Czy na pewno chcesz usunąć zdobyty szczyt?")
+            alertDialogBuilder.setPositiveButton("Tak") { _, _ ->
+                runBlocking {
+                    mountainExpeditionDao.delete(mountainExpedition)
                 }
-                alertDialogBuilder.setNegativeButton("Nie", null)
-                val alertDialog = alertDialogBuilder.create()
-                alertDialog.show()
+                setResult(RESULT_OK, Intent().putExtra("deleted", "true"))
+                finish()
+            }
+            alertDialogBuilder.setNegativeButton("Nie", null)
+            val alertDialog = alertDialogBuilder.create()
+            alertDialog.show()
         }
         return super.onOptionsItemSelected(item)
     }
