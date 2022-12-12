@@ -28,7 +28,7 @@ class DetailedExpeditionActivity : AppCompatActivity() {
     private lateinit var dateTV: TextView
     private lateinit var photoIV: ImageView
     private lateinit var photoFile: File
-    private lateinit var photoFileName: String
+    private var photoFileName: String = ""
 
     @SuppressLint("SetTextI18n")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -62,9 +62,11 @@ class DetailedExpeditionActivity : AppCompatActivity() {
     }
 
     private fun setImageView() {
-        photoFile = File(getExternalFilesDir(null), photoFileName)
-        val imageRotator = ImageRotator()
-        photoIV.setImageBitmap(imageRotator.getImageOriginalOrientation(photoFile))
+        if(photoFileName!=""){
+            photoFile = File(getExternalFilesDir(null), photoFileName)
+            val imageRotator = ImageRotator()
+            photoIV.setImageBitmap(imageRotator.getImageOriginalOrientation(photoFile))
+        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {

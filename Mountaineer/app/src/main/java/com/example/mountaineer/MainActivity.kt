@@ -4,9 +4,12 @@ import android.app.Activity
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.Menu
+import android.view.MenuItem
 import android.view.View
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.app.AlertDialog
 import androidx.recyclerview.widget.RecyclerView
 import androidx.room.Room
 import com.example.mountaineer.adapter.MainActivityRVAdapter
@@ -40,18 +43,22 @@ class MainActivity : AppCompatActivity(), OnItemClickListener {
         recyclerView.adapter = MainActivityRVAdapter(mountainExpeditionList, this)
     }
 
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.menu_main_activity, menu)
+        return super.onCreateOptionsMenu(menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+
+        if (item.itemId == R.id.showStatisticsButton) {
+            val intent = Intent(this, StatisticsActivity::class.java)
+            statisticsActivityLauncher.launch(intent)
+        }
+        return super.onOptionsItemSelected(item)
+    }
+
     fun add(view: View?) {
         addNewExpedition()
-//        val expedition = MountainExpedition(mountainName = "Rysy$counter", conquerDate = "2022-12-1$counter")
-//
-//        runBlocking {
-//            mountainExpeditionDao.insert(expedition)
-//            mountainExpeditionList = mountainExpeditionDao.getAllMountainExpeditions()
-//            recyclerView.swapAdapter(MainActivityRVAdapter(mountainExpeditionList, this@MainActivity), false);
-//            recyclerView.scrollToPosition(mountainExpeditionList.size-1)
-//        }
-//
-//        counter++
     }
 
     override fun onItemClick(position: Int) {
@@ -95,6 +102,9 @@ class MainActivity : AppCompatActivity(), OnItemClickListener {
             Toast.makeText(this, "Nie dodano nowego zdobytego szczytu.", Toast.LENGTH_SHORT).show()
         }
     }
+
+    private val statisticsActivityLauncher = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()){}
 
 
 }

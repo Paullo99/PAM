@@ -39,7 +39,7 @@ class AddExpeditionActivity : AppCompatActivity() {
     private lateinit var conquerDateTextView: TextView
     private lateinit var calendar: Calendar
     private lateinit var photoImageView: ImageView
-    private lateinit var photoFileName: String
+    private var photoFileName: String = ""
     private lateinit var photoFile: File
     private var permission by Delegates.notNull<Int>()
     private lateinit var viewModel: AddExpeditionActivityViewModel

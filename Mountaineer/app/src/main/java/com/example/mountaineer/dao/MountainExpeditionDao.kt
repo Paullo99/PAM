@@ -20,4 +20,13 @@ interface MountainExpeditionDao {
 
     @Delete
     suspend fun delete(expedition: MountainExpedition)
+
+    @Query("SELECT COUNT(*) FROM mountain_expedition")
+    suspend fun countMountainExpeditions(): Int
+
+    @Query("SELECT * FROM mountain_expedition WHERE mountain_height = (SELECT MAX(mountain_height) FROM mountain_expedition)")
+    suspend fun getHighestMountain(): MountainExpedition
+
+    @Query("SELECT mountain_range FROM mountain_expedition GROUP BY mountain_range ORDER BY COUNT(mountain_range) DESC LIMIT 1")
+    suspend fun getMostVisited(): String
 }

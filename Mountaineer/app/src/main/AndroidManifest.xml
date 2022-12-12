@@ -15,6 +15,13 @@
         android:theme="@style/Theme.Mountaineer"
         tools:targetApi="31">
         <activity
+            android:name=".StatisticsActivity"
+            android:exported="false">
+            <meta-data
+                android:name="android.app.lib_name"
+                android:value="" />
+        </activity>
+        <activity
             android:name=".DetailedExpeditionActivity"
             android:exported="false">
             <meta-data
@@ -41,6 +48,7 @@
                 android:name="android.app.lib_name"
                 android:value="" />
         </activity>
+
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="com.example.mountaineer.provider"
