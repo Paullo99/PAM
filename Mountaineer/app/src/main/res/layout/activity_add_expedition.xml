@@ -91,16 +91,13 @@
 
     <ImageView
         android:id="@+id/photoImageView"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:layout_marginTop="10dp"
+        android:layout_width="287dp"
+        android:layout_height="136dp"
         android:onClick="takePhoto"
         app:layout_constraintBottom_toTopOf="@+id/addNewExpeditionButton"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/conquerDateEditText"
-        app:layout_constraintVertical_bias="0.0"
         app:srcCompat="@drawable/ic_baseline_insert_photo_24" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -34,7 +34,7 @@ class AddExpeditionActivity : AppCompatActivity() {
     private lateinit var mountainNameEditText: EditText
     private lateinit var mountainRangeEditText: EditText
     private lateinit var mountainHeightEditText: EditText
-    private lateinit var conquerDateEditText: TextView
+    private lateinit var conquerDateTextView: TextView
     private lateinit var calendar: Calendar
     private lateinit var photoImageView: ImageView
     private lateinit var photoFileName: String
@@ -49,7 +49,7 @@ class AddExpeditionActivity : AppCompatActivity() {
         mountainNameEditText = findViewById(R.id.mountainNameEditText)
         mountainRangeEditText = findViewById(R.id.mountainRangeEditText)
         mountainHeightEditText = findViewById(R.id.mountainHeightEditText)
-        conquerDateEditText = findViewById(R.id.conquerDateEditText)
+        conquerDateTextView = findViewById(R.id.conquerDateEditText)
         photoImageView = findViewById(R.id.photoImageView)
 
         calendar = Calendar.getInstance()
@@ -59,7 +59,7 @@ class AddExpeditionActivity : AppCompatActivity() {
             calendar.get(Calendar.MONTH) + 1,
             calendar.get(Calendar.DAY_OF_MONTH)
         )
-        conquerDateEditText.text = todayDate
+        conquerDateTextView.text = todayDate
 
         val db = Room.databaseBuilder(
             applicationContext,
@@ -67,7 +67,6 @@ class AddExpeditionActivity : AppCompatActivity() {
         ).build()
 
         mountainExpeditionDao = db.mountainExpeditionDao()
-
     }
 
     fun changeDate(view: View?) {
@@ -82,7 +81,7 @@ class AddExpeditionActivity : AppCompatActivity() {
 
             override fun onDateSet(view: DatePicker, year: Int, month: Int, day: Int) {
                 val finalString = "$year-%02d-%02d".format(month + 1, day)
-                conquerDateEditText.text = finalString
+                conquerDateTextView.text = finalString
             }
         }
         DatePickerFragment().show(supportFragmentManager, "datePicker")
@@ -94,7 +93,7 @@ class AddExpeditionActivity : AppCompatActivity() {
                 mountainName = mountainNameEditText.text.toString(),
                 mountainRange = mountainRangeEditText.text.toString(),
                 mountainHeight = Integer.parseInt(mountainHeightEditText.text.toString()),
-                conquerDate = conquerDateEditText.text.toString(),
+                conquerDate = conquerDateTextView.text.toString(),
                 photoFileName = photoFileName
             )
             runBlocking {
@@ -111,11 +110,11 @@ class AddExpeditionActivity : AppCompatActivity() {
         return mountainNameEditText.text.toString() != ""
                 && mountainRangeEditText.text.toString() != ""
                 && mountainHeightEditText.text.toString() != ""
-                && conquerDateEditText.text.toString() != ""
+                && conquerDateTextView.text.toString() != ""
     }
 
     fun takePhoto(view: View?) {
-        getPermissions()
+        getCameraPermissions()
         val timeStamp: String = SimpleDateFormat("yyyyMMdd_HHmmss").format(Date())
         photoFileName = "$timeStamp.jpg"
         photoFile = File(getExternalFilesDir(null), photoFileName)
@@ -143,7 +142,7 @@ class AddExpeditionActivity : AppCompatActivity() {
         }
     }
 
-    private fun getPermissions() {
+    private fun getCameraPermissions() {
         permission = ContextCompat.checkSelfPermission(
             this,
             Manifest.permission.CAMERA
@@ -156,7 +155,6 @@ class AddExpeditionActivity : AppCompatActivity() {
                 1
             )
         }
-
     }
 
     override fun onRequestPermissionsResult(
@@ -168,7 +166,11 @@ class AddExpeditionActivity : AppCompatActivity() {
         when (requestCode) {
             1 -> {
 
-                if (grantResults.isEmpty() || grantResults[0] != PackageManager.PERMISSION_GRANTED) {
+                if (grantResults.isEmpty() || ActivityCompat.checkSelfPermission(
+                        this,
+                        Manifest.permission.CAMERA
+                    ) != PackageManager.PERMISSION_GRANTED
+                ) {
 
                     Toast.makeText(
                         this,
