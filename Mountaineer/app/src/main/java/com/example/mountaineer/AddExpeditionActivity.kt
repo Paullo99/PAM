@@ -16,11 +16,13 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.fragment.app.DialogFragment
+import androidx.lifecycle.ViewModelProvider
 import androidx.room.Room
 import com.example.mountaineer.dao.MountainExpeditionDao
 import com.example.mountaineer.database.AppDatabase
 import com.example.mountaineer.helper.ImageRotator
 import com.example.mountaineer.model.MountainExpedition
+import com.example.mountaineer.viewmodel.AddExpeditionActivityViewModel
 import kotlinx.coroutines.runBlocking
 import java.io.File
 import java.text.SimpleDateFormat
@@ -40,6 +42,7 @@ class AddExpeditionActivity : AppCompatActivity() {
     private lateinit var photoFileName: String
     private lateinit var photoFile: File
     private var permission by Delegates.notNull<Int>()
+    private lateinit var viewModel: AddExpeditionActivityViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -54,12 +57,18 @@ class AddExpeditionActivity : AppCompatActivity() {
 
         calendar = Calendar.getInstance()
 
-        val todayDate = "%d-%02d-%02d".format(
-            calendar.get(Calendar.YEAR),
-            calendar.get(Calendar.MONTH) + 1,
-            calendar.get(Calendar.DAY_OF_MONTH)
-        )
-        conquerDateTextView.text = todayDate
+        viewModel = ViewModelProvider(this)[AddExpeditionActivityViewModel::class.java]
+        mountainNameEditText.setText(viewModel.mountainName)
+        mountainRangeEditText.setText(viewModel.mountainRange)
+        mountainHeightEditText.setText(viewModel.height)
+        conquerDateTextView.text = viewModel.conquerDate
+        if(viewModel.photoFileName!=""){
+            photoFileName = viewModel.photoFileName
+            photoFile = File(getExternalFilesDir(null), photoFileName)
+            val imageRotator = ImageRotator()
+            photoImageView.setImageBitmap(imageRotator.getImageOriginalOrientation(photoFile))
+        }
+
 
         val db = Room.databaseBuilder(
             applicationContext,
@@ -82,6 +91,7 @@ class AddExpeditionActivity : AppCompatActivity() {
             override fun onDateSet(view: DatePicker, year: Int, month: Int, day: Int) {
                 val finalString = "$year-%02d-%02d".format(month + 1, day)
                 conquerDateTextView.text = finalString
+                viewModel.conquerDate = finalString
             }
         }
         DatePickerFragment().show(supportFragmentManager, "datePicker")
@@ -117,6 +127,7 @@ class AddExpeditionActivity : AppCompatActivity() {
         getCameraPermissions()
         val timeStamp: String = SimpleDateFormat("yyyyMMdd_HHmmss").format(Date())
         photoFileName = "$timeStamp.jpg"
+        viewModel.photoFileName = photoFileName
         photoFile = File(getExternalFilesDir(null), photoFileName)
         val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
         intent.putExtra(

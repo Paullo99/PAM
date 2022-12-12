@@ -40,16 +40,17 @@
 
     <EditText
         android:id="@+id/mountainHeightEditText"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="20dp"
         android:layout_marginTop="20dp"
+        android:layout_marginEnd="5dp"
         android:ems="10"
         android:hint="Wysokość n.p.m."
         android:inputType="numberSigned"
         android:minHeight="48dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintEnd_toStartOf="@+id/conquerDateEditText"
+        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/mountainRangeEditText" />
 
@@ -57,6 +58,7 @@
         android:id="@+id/addNewExpeditionButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp"
         android:onClick="addNewExpedition"
         android:text="Dodaj"
         android:textSize="18sp"
@@ -66,17 +68,21 @@
 
     <TextView
         android:id="@+id/conquerDateEditText"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
         android:layout_marginStart="20dp"
-        android:layout_marginTop="20dp"
+        android:layout_marginEnd="20dp"
+        android:autoSizeTextType="none"
         android:ems="10"
         android:gravity="center_vertical"
-        android:hint="Data zdobycia szczytu"
+        android:hint="Data"
         android:minHeight="48dp"
         android:textSize="18sp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/mountainHeightEditText" />
+        app:layout_constraintBottom_toBottomOf="@+id/mountainHeightEditText"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/mountainHeightEditText"
+        app:layout_constraintTop_toTopOf="@+id/mountainHeightEditText" />
 
     <Button
         android:id="@+id/changeDateButton"
@@ -85,19 +91,19 @@
         android:onClick="changeDate"
         android:text="Zmień datę"
         android:textSize="12sp"
-        app:layout_constraintBottom_toBottomOf="@+id/conquerDateEditText"
-        app:layout_constraintStart_toEndOf="@+id/conquerDateEditText"
-        app:layout_constraintTop_toTopOf="@+id/conquerDateEditText" />
+        app:layout_constraintStart_toStartOf="@+id/conquerDateEditText"
+        app:layout_constraintTop_toBottomOf="@+id/conquerDateEditText" />
 
     <ImageView
         android:id="@+id/photoImageView"
-        android:layout_width="287dp"
-        android:layout_height="136dp"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
         android:onClick="takePhoto"
         app:layout_constraintBottom_toTopOf="@+id/addNewExpeditionButton"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/conquerDateEditText"
+        app:layout_constraintTop_toBottomOf="@+id/changeDateButton"
         app:srcCompat="@drawable/ic_baseline_insert_photo_24" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
