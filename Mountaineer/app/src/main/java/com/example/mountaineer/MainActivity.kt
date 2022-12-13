@@ -7,9 +7,9 @@ import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.appcompat.app.AlertDialog
 import androidx.recyclerview.widget.RecyclerView
 import androidx.room.Room
 import com.example.mountaineer.adapter.MainActivityRVAdapter
@@ -22,14 +22,15 @@ import kotlinx.coroutines.runBlocking
 class MainActivity : AppCompatActivity(), OnItemClickListener {
 
     private lateinit var recyclerView: RecyclerView
+    private lateinit var noMountainExpeditionsTV: TextView
     private lateinit var mountainExpeditionDao: MountainExpeditionDao
     private lateinit var mountainExpeditionList: List<MountainExpedition>
-    private var counter = 0;
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         recyclerView = findViewById(R.id.recyclerView)
+        noMountainExpeditionsTV = findViewById(R.id.noMountainExpeditionsTV)
 
         val db = Room.databaseBuilder(
             applicationContext,
@@ -40,7 +41,8 @@ class MainActivity : AppCompatActivity(), OnItemClickListener {
         runBlocking {
             mountainExpeditionList = mountainExpeditionDao.getAllMountainExpeditions()
         }
-        recyclerView.adapter = MainActivityRVAdapter(mountainExpeditionList, this)
+
+        refreshView()
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -57,8 +59,9 @@ class MainActivity : AppCompatActivity(), OnItemClickListener {
         return super.onOptionsItemSelected(item)
     }
 
-    fun add(view: View?) {
-        addNewExpedition()
+    fun addNewMountainExpedition(view: View?) {
+        val intent = Intent(this, AddExpeditionActivity::class.java)
+        addNewExpeditionExpeditionActivityLauncher.launch(intent)
     }
 
     override fun onItemClick(position: Int) {
@@ -78,14 +81,9 @@ class MainActivity : AppCompatActivity(), OnItemClickListener {
             runBlocking {
                 mountainExpeditionList = mountainExpeditionDao.getAllMountainExpeditions()
             }
-            recyclerView.swapAdapter(MainActivityRVAdapter(mountainExpeditionList, this@MainActivity), false)
+            refreshView()
             Toast.makeText(this, "Usunięto zdobyty szczyt", Toast.LENGTH_SHORT).show()
         }
-    }
-
-    private fun addNewExpedition() {
-        val intent = Intent(this, AddExpeditionActivity::class.java)
-        addNewExpeditionExpeditionActivityLauncher.launch(intent)
     }
 
     private val addNewExpeditionExpeditionActivityLauncher = registerForActivityResult(
@@ -96,7 +94,7 @@ class MainActivity : AppCompatActivity(), OnItemClickListener {
             runBlocking {
                 mountainExpeditionList = mountainExpeditionDao.getAllMountainExpeditions()
             }
-            recyclerView.swapAdapter(MainActivityRVAdapter(mountainExpeditionList, this@MainActivity), false);
+            refreshView()
             recyclerView.scrollToPosition(mountainExpeditionList.size-1)
         } else {
             Toast.makeText(this, "Nie dodano nowego zdobytego szczytu.", Toast.LENGTH_SHORT).show()
@@ -105,6 +103,12 @@ class MainActivity : AppCompatActivity(), OnItemClickListener {
 
     private val statisticsActivityLauncher = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()){}
+
+    private fun refreshView(){
+        if(mountainExpeditionList.isEmpty()) noMountainExpeditionsTV.visibility = View.VISIBLE
+        else noMountainExpeditionsTV.visibility = View.INVISIBLE
+        recyclerView.swapAdapter(MainActivityRVAdapter(mountainExpeditionList, this@MainActivity), false)
+    }
 
 
 }
