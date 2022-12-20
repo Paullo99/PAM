@@ -8,6 +8,7 @@ import android.view.Menu
 import android.view.MenuItem
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.room.Room
 import com.example.mountaineer.dao.MountainExpeditionDao
@@ -89,7 +90,13 @@ class DetailedExpeditionActivity : AppCompatActivity() {
             alertDialogBuilder.setNegativeButton("Nie", null)
             val alertDialog = alertDialogBuilder.create()
             alertDialog.show()
+        }else if(item.itemId == R.id.editExpeditionButton){
+            val intent = Intent(this, EditMountainExpeditionActivity::class.java)
+            editMountainExpeditionActivityLauncher.launch(intent)
         }
         return super.onOptionsItemSelected(item)
     }
+
+    private val editMountainExpeditionActivityLauncher = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()){}
 }

@@ -150,6 +150,8 @@ class AddExpeditionActivity : AppCompatActivity() {
             photoFile = File(getExternalFilesDir(null), photoFileName)
             val imageRotator = ImageRotator()
             photoImageView.setImageBitmap(imageRotator.getImageOriginalOrientation(photoFile))
+        } else {
+            photoFileName = ""
         }
     }
 
