@@ -27,6 +27,6 @@ interface MountainExpeditionDao {
     @Query("SELECT * FROM mountain_expedition WHERE mountain_height = (SELECT MAX(mountain_height) FROM mountain_expedition)")
     suspend fun getHighestMountain(): MountainExpedition
 
-    @Query("SELECT mountain_range FROM mountain_expedition GROUP BY mountain_range ORDER BY COUNT(mountain_range) DESC LIMIT 1")
-    suspend fun getMostVisited(): String
+    @Query("SELECT mountain_range_id FROM mountain_expedition GROUP BY mountain_range_id ORDER BY COUNT(mountain_range_id) DESC LIMIT 1")
+    suspend fun getMostVisited(): Int
 }

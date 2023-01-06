@@ -12,6 +12,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.room.Room
 import com.example.mountaineer.dao.MountainExpeditionDao
+import com.example.mountaineer.dao.MountainRangeDao
 import com.example.mountaineer.database.AppDatabase
 import com.example.mountaineer.helper.ImageRotator
 import com.example.mountaineer.model.MountainExpedition
@@ -21,6 +22,7 @@ import java.io.File
 class DetailedExpeditionActivity : AppCompatActivity() {
 
     private lateinit var mountainExpeditionDao: MountainExpeditionDao
+    private lateinit var mountainRangeDao: MountainRangeDao
     private lateinit var mountainExpedition: MountainExpedition
 
     private lateinit var mountainNameTV: TextView
@@ -50,12 +52,15 @@ class DetailedExpeditionActivity : AppCompatActivity() {
         ).build()
 
         mountainExpeditionDao = db.mountainExpeditionDao()
+        mountainRangeDao = db.mountainRangeDao()
         runBlocking {
             mountainExpedition = mountainExpeditionDao.getMountainExpeditionById(id)
+            mountainRangeTV.text =
+                mountainRangeDao.getMountainRangeNameById(mountainExpedition.mountainRangeId)
+                    .toString()
         }
 
         mountainNameTV.text = mountainExpedition.mountainName
-        mountainRangeTV.text = mountainExpedition.mountainRange
         heightTV.text = mountainExpedition.mountainHeight.toString() + " m n.p.m."
         dateTV.text = mountainExpedition.conquerDate
         photoFileName = mountainExpedition.photoFileName
@@ -63,7 +68,7 @@ class DetailedExpeditionActivity : AppCompatActivity() {
     }
 
     private fun setImageView() {
-        if(photoFileName!=""){
+        if (photoFileName != "") {
             photoFile = File(getExternalFilesDir(null), photoFileName)
             val imageRotator = ImageRotator()
             photoIV.setImageBitmap(imageRotator.getImageOriginalOrientation(photoFile))
@@ -90,7 +95,7 @@ class DetailedExpeditionActivity : AppCompatActivity() {
             alertDialogBuilder.setNegativeButton("Nie", null)
             val alertDialog = alertDialogBuilder.create()
             alertDialog.show()
-        }else if(item.itemId == R.id.editExpeditionButton){
+        } else if (item.itemId == R.id.editExpeditionButton) {
             val intent = Intent(this, EditMountainExpeditionActivity::class.java)
             editMountainExpeditionActivityLauncher.launch(intent)
         }
@@ -98,5 +103,6 @@ class DetailedExpeditionActivity : AppCompatActivity() {
     }
 
     private val editMountainExpeditionActivityLauncher = registerForActivityResult(
-        ActivityResultContracts.StartActivityForResult()){}
+        ActivityResultContracts.StartActivityForResult()
+    ) {}
 }

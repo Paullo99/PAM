@@ -6,7 +6,7 @@ import java.util.*
 class AddExpeditionActivityViewModel : ViewModel(){
 
     var mountainName = ""
-    var mountainRange = ""
+    var mountainRangePosiotion = 0
     var height = ""
     var conquerDate = setTodayDate()
     var photoFileName = ""

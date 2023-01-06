@@ -19,9 +19,11 @@ import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.room.Room
 import com.example.mountaineer.dao.MountainExpeditionDao
+import com.example.mountaineer.dao.MountainRangeDao
 import com.example.mountaineer.database.AppDatabase
 import com.example.mountaineer.helper.ImageRotator
 import com.example.mountaineer.model.MountainExpedition
+import com.example.mountaineer.model.MountainRange
 import com.example.mountaineer.viewmodel.AddExpeditionActivityViewModel
 import kotlinx.coroutines.runBlocking
 import java.io.File
@@ -33,8 +35,9 @@ import kotlin.properties.Delegates
 class AddExpeditionActivity : AppCompatActivity() {
 
     private lateinit var mountainExpeditionDao: MountainExpeditionDao
+    private lateinit var mountainRangeDao: MountainRangeDao
     private lateinit var mountainNameEditText: EditText
-    private lateinit var mountainRangeEditText: EditText
+    private lateinit var mountainRangeSpinner: Spinner
     private lateinit var mountainHeightEditText: EditText
     private lateinit var conquerDateTextView: TextView
     private lateinit var calendar: Calendar
@@ -43,6 +46,8 @@ class AddExpeditionActivity : AppCompatActivity() {
     private lateinit var photoFile: File
     private var permission by Delegates.notNull<Int>()
     private lateinit var viewModel: AddExpeditionActivityViewModel
+    private lateinit var mountainRangeAdapter: ArrayAdapter<MountainRange>
+    private lateinit var mountainRanges: List<MountainRange>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -50,7 +55,7 @@ class AddExpeditionActivity : AppCompatActivity() {
         setContentView(R.layout.activity_add_expedition)
 
         mountainNameEditText = findViewById(R.id.mountainNameEditText)
-        mountainRangeEditText = findViewById(R.id.mountainRangeEditText)
+        mountainRangeSpinner = findViewById(R.id.mountainRangeSpinner)
         mountainHeightEditText = findViewById(R.id.mountainHeightEditText)
         conquerDateTextView = findViewById(R.id.conquerDateEditText)
         photoImageView = findViewById(R.id.photoImageView)
@@ -59,8 +64,8 @@ class AddExpeditionActivity : AppCompatActivity() {
 
         viewModel = ViewModelProvider(this)[AddExpeditionActivityViewModel::class.java]
         mountainNameEditText.setText(viewModel.mountainName)
-        mountainRangeEditText.setText(viewModel.mountainRange)
         mountainHeightEditText.setText(viewModel.height)
+        mountainRangeSpinner.setSelection(viewModel.mountainRangePosiotion)
         conquerDateTextView.text = viewModel.conquerDate
         if(viewModel.photoFileName!=""){
             photoFileName = viewModel.photoFileName
@@ -76,6 +81,14 @@ class AddExpeditionActivity : AppCompatActivity() {
         ).build()
 
         mountainExpeditionDao = db.mountainExpeditionDao()
+        mountainRangeDao = db.mountainRangeDao()
+
+        runBlocking {
+            mountainRanges = mountainRangeDao.getAllMountainRanges()
+        }
+        mountainRangeAdapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, mountainRanges)
+        mountainRangeAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        mountainRangeSpinner.adapter = mountainRangeAdapter
     }
 
     fun changeDate(view: View?) {
@@ -99,14 +112,14 @@ class AddExpeditionActivity : AppCompatActivity() {
 
     fun addNewExpedition(view: View?) {
         if (checkIfAllInputsAreFilled()) {
-            val mountainExpedition = MountainExpedition(
-                mountainName = mountainNameEditText.text.toString(),
-                mountainRange = mountainRangeEditText.text.toString(),
-                mountainHeight = Integer.parseInt(mountainHeightEditText.text.toString()),
-                conquerDate = conquerDateTextView.text.toString(),
-                photoFileName = photoFileName
-            )
             runBlocking {
+                val mountainExpedition = MountainExpedition(
+                    mountainName = mountainNameEditText.text.toString(),
+                    mountainRangeId = mountainRangeDao.getMountainRangeIdByName(mountainRangeSpinner.selectedItem.toString()),
+                    mountainHeight = Integer.parseInt(mountainHeightEditText.text.toString()),
+                    conquerDate = conquerDateTextView.text.toString(),
+                    photoFileName = photoFileName
+                )
                 mountainExpeditionDao.insert(mountainExpedition)
             }
             setResult(RESULT_OK)
@@ -118,7 +131,6 @@ class AddExpeditionActivity : AppCompatActivity() {
 
     private fun checkIfAllInputsAreFilled(): Boolean {
         return mountainNameEditText.text.toString() != ""
-                && mountainRangeEditText.text.toString() != ""
                 && mountainHeightEditText.text.toString() != ""
                 && conquerDateTextView.text.toString() != ""
     }
