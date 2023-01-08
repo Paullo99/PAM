@@ -30,8 +30,10 @@ class MainActivity : AppCompatActivity(), OnItemClickListener {
     private lateinit var noMountainExpeditionsTV: TextView
     private lateinit var mountainExpeditionDao: MountainExpeditionDao
     private lateinit var mountainExpeditionList: List<MountainExpedition>
-    private val polishMountainRangeList = listOf("Góry Świętokrzyskie", "Karkonosze", "Tatry",
-    "Pieniny", "Beskid Śląski", "Beskid Mały", "Beskid Żywiecki", "Bieszczady", "Inne").sorted()
+    private val polishMountainRangeList = listOf(
+        "Góry Świętokrzyskie", "Karkonosze", "Tatry",
+        "Pieniny", "Beskid Śląski", "Beskid Mały", "Beskid Żywiecki", "Bieszczady", "Inne"
+    ).sorted()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -68,6 +70,26 @@ class MainActivity : AppCompatActivity(), OnItemClickListener {
         addNewExpeditionExpeditionActivityLauncher.launch(intent)
     }
 
+    fun sortAlphabetDown(view: View?) {
+        mountainExpeditionList = mountainExpeditionList.sortedBy { it.mountainName }
+        refreshView()
+    }
+
+    fun sortAlphabetUp(view: View?) {
+        mountainExpeditionList = mountainExpeditionList.sortedByDescending { it.mountainName }
+        refreshView()
+    }
+
+    fun sortDateUp(view: View?) {
+        mountainExpeditionList = mountainExpeditionList.sortedBy { it.conquerDate }
+        refreshView()
+    }
+
+    fun sortDateDown(view: View?) {
+        mountainExpeditionList = mountainExpeditionList.sortedByDescending { it.conquerDate }
+        refreshView()
+    }
+
     override fun onItemClick(position: Int) {
         getSelectedExpedition(mountainExpeditionList[position].id)
     }
@@ -81,7 +103,7 @@ class MainActivity : AppCompatActivity(), OnItemClickListener {
     private val detailedExpeditionActivityLauncher = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
     ) {
-        if (it.resultCode == Activity.RESULT_OK && it.data?.extras?.get("deleted")!=null) {
+        if (it.resultCode == Activity.RESULT_OK && it.data?.extras?.get("deleted") != null) {
             runBlocking {
                 mountainExpeditionList = mountainExpeditionDao.getAllMountainExpeditions()
             }
@@ -99,19 +121,26 @@ class MainActivity : AppCompatActivity(), OnItemClickListener {
                 mountainExpeditionList = mountainExpeditionDao.getAllMountainExpeditions()
             }
             refreshView()
-            recyclerView.scrollToPosition(mountainExpeditionList.size-1)
+            recyclerView.scrollToPosition(mountainExpeditionList.size - 1)
         } else {
             Toast.makeText(this, "Nie dodano nowego zdobytego szczytu.", Toast.LENGTH_SHORT).show()
         }
     }
 
     private val statisticsActivityLauncher = registerForActivityResult(
-        ActivityResultContracts.StartActivityForResult()){}
+        ActivityResultContracts.StartActivityForResult()
+    ) {}
 
-    private fun refreshView(){
-        if(mountainExpeditionList.isEmpty()) noMountainExpeditionsTV.visibility = View.VISIBLE
+    private fun refreshView() {
+        if (mountainExpeditionList.isEmpty()) noMountainExpeditionsTV.visibility = View.VISIBLE
         else noMountainExpeditionsTV.visibility = View.INVISIBLE
-        recyclerView.swapAdapter(MainActivityRVAdapter(mountainExpeditionList, this@MainActivity), false)
+        recyclerView.swapAdapter(
+            MainActivityRVAdapter(
+                mountainExpeditionList,
+                this@MainActivity,
+                this@MainActivity
+            ), false
+        )
     }
 
     private fun buildDatabase() = Room.databaseBuilder(
@@ -121,15 +150,16 @@ class MainActivity : AppCompatActivity(), OnItemClickListener {
         .addCallback(insertInitialDataCallback)
         .build()
 
-    private val insertInitialDataCallback: RoomDatabase.Callback = object : RoomDatabase.Callback() {
-        override fun onCreate(db: SupportSQLiteDatabase) {
-            insertPolishMountainRangesToDatabase(db)
+    private val insertInitialDataCallback: RoomDatabase.Callback =
+        object : RoomDatabase.Callback() {
+            override fun onCreate(db: SupportSQLiteDatabase) {
+                insertPolishMountainRangesToDatabase(db)
+            }
         }
-    }
 
-    private fun insertPolishMountainRangesToDatabase(db: SupportSQLiteDatabase){
+    private fun insertPolishMountainRangesToDatabase(db: SupportSQLiteDatabase) {
         val cv = ContentValues()
-        for(mountainRange in polishMountainRangeList){
+        for (mountainRange in polishMountainRangeList) {
             cv.put("mountain_range_name", mountainRange)
             db.insert("mountain_range", CONFLICT_IGNORE, cv)
             cv.clear()
