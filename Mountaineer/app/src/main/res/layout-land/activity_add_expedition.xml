@@ -11,7 +11,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="20dp"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="10dp"
         android:autoSizeMaxTextSize="20sp"
         android:autoSizeMinTextSize="16sp"
         android:autoSizeStepGranularity="1sp"
@@ -31,7 +31,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="20dp"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="15dp"
         android:autoSizeMaxTextSize="20sp"
         android:autoSizeMinTextSize="16sp"
         android:autoSizeStepGranularity="1sp"
@@ -65,7 +65,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="20dp"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="15dp"
         android:autoSizeMaxTextSize="20sp"
         android:autoSizeMinTextSize="16sp"
         android:autoSizeStepGranularity="1sp"
@@ -112,15 +112,36 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.80966765" />
+        app:layout_constraintGuide_percent="0.82" />
 
     <Spinner
         android:id="@+id/mountainRangeSpinner"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="15dp"
         app:layout_constraintEnd_toEndOf="@+id/mountainNameEditText"
         app:layout_constraintStart_toStartOf="@+id/mountainNameEditText"
         app:layout_constraintTop_toBottomOf="@+id/mountainNameEditText" />
+
+    <TextView
+        android:id="@+id/locationTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:text="brak lokalizacji"
+        app:layout_constraintStart_toStartOf="@+id/conquerDateEditText"
+        app:layout_constraintTop_toBottomOf="@+id/conquerDateEditText" />
+
+    <Button
+        android:id="@+id/button2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="15dp"
+        android:onClick="openMaps"
+        android:text="Lokalizacja"
+        android:textSize="12sp"
+        app:layout_constraintBottom_toBottomOf="@+id/locationTextView"
+        app:layout_constraintStart_toEndOf="@+id/locationTextView"
+        app:layout_constraintTop_toTopOf="@+id/locationTextView" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

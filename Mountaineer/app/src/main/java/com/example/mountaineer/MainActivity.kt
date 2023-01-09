@@ -61,6 +61,9 @@ class MainActivity : AppCompatActivity(), OnItemClickListener {
         if (item.itemId == R.id.showStatisticsButton) {
             val intent = Intent(this, StatisticsActivity::class.java)
             statisticsActivityLauncher.launch(intent)
+        } else if(item.itemId == R.id.showMountainExpeditionsOnMapButton){
+            val intent = Intent(this, ShowMountainExpeditionsOnMapActivity::class.java)
+            showMountainExpeditionsOnMapActivityLauncher.launch(intent)
         }
         return super.onOptionsItemSelected(item)
     }
@@ -128,6 +131,10 @@ class MainActivity : AppCompatActivity(), OnItemClickListener {
     }
 
     private val statisticsActivityLauncher = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) {}
+
+    private val showMountainExpeditionsOnMapActivityLauncher = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
     ) {}
 

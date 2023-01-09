@@ -21,16 +21,13 @@
             android:value="${MAPS_API_KEY}" />
 
         <activity
+            android:name=".ShowMountainExpeditionsOnMapActivity"
+            android:exported="false"
+            android:label="@string/title_activity_show_mountain_expeditions_on_map" />
+        <activity
             android:name=".PickPlaceFromMapsActivity"
             android:exported="false"
             android:label="@string/title_activity_pick_place_from_maps" />
-        <activity
-            android:name=".EditMountainExpeditionActivity"
-            android:exported="false">
-            <meta-data
-                android:name="android.app.lib_name"
-                android:value="" />
-        </activity>
         <activity
             android:name=".StatisticsActivity"
             android:exported="false">

@@ -2,6 +2,11 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
+        android:id="@+id/showMountainExpeditionsOnMapButton"
+        android:icon="@drawable/ic_baseline_map_24"
+        app:showAsAction="always"
+        android:title="Otwórz mapę" />
+    <item
         android:id="@+id/showStatisticsButton"
         android:icon="@drawable/ic_baseline_star_24"
         app:showAsAction="always"

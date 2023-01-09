@@ -1,4 +1,7 @@
 <resources>
     <string name="app_name">Mountaineer</string>
     <string name="title_activity_pick_place_from_maps">Wybierz miejsce na mapie</string>
+    <string name="title_activity_show_mountain_expeditions_on_map">
+        Zdobyte szczyty
+    </string>
 </resources>

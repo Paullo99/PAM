@@ -97,16 +97,9 @@ class DetailedExpeditionActivity : AppCompatActivity() {
             alertDialogBuilder.setNegativeButton("Nie", null)
             val alertDialog = alertDialogBuilder.create()
             alertDialog.show()
-        } else if (item.itemId == R.id.editExpeditionButton) {
-            val intent = Intent(this, EditMountainExpeditionActivity::class.java)
-            editMountainExpeditionActivityLauncher.launch(intent)
         }
         return super.onOptionsItemSelected(item)
     }
-
-    private val editMountainExpeditionActivityLauncher = registerForActivityResult(
-        ActivityResultContracts.StartActivityForResult()
-    ) {}
 
     fun showOnMap(view: View?){
         val geoCode =
