@@ -217,9 +217,6 @@ class AddExpeditionActivity : AppCompatActivity() {
                         "W celu zrobienia zdjęcia konieczne są uprawnienia.",
                         Toast.LENGTH_SHORT
                     ).show()
-                } else {
-                    val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-                    takePhotoIntentLauncher.launch(intent)
                 }
             }
         }
