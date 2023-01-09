@@ -99,4 +99,16 @@
         app:layout_constraintStart_toStartOf="@+id/mountainNameEditText"
         app:layout_constraintTop_toBottomOf="@+id/mountainNameEditText" />
 
+    <Button
+        android:id="@+id/button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:onClick="openMaps"
+        android:text="Lokalizacja"
+        android:textSize="12sp"
+        app:layout_constraintBottom_toBottomOf="@+id/changeDateButton"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/changeDateButton" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

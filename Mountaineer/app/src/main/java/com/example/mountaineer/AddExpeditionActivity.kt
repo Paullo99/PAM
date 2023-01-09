@@ -155,6 +155,21 @@ class AddExpeditionActivity : AppCompatActivity() {
         }
     }
 
+    fun openMaps(view: View?){
+        val intent = Intent(this, PickPlaceFromMapsActivity::class.java)
+        mapsActivityLauncher.launch(intent)
+    }
+
+    private val mapsActivityLauncher = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) {
+        if (it.resultCode == Activity.RESULT_OK) {
+            Toast.makeText(this, it.data?.extras?.get("longitude").toString(), Toast.LENGTH_SHORT).show()
+
+
+        }
+    }
+
     private val takePhotoIntentLauncher = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
     ) {
