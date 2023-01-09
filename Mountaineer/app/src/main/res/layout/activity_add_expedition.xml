@@ -82,12 +82,13 @@
         android:id="@+id/photoImageView"
         android:layout_width="0dp"
         android:layout_height="0dp"
+        android:layout_marginTop="5dp"
         android:onClick="takePhoto"
         app:layout_constraintBottom_toTopOf="@+id/addNewExpeditionButton"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/changeDateButton"
+        app:layout_constraintTop_toBottomOf="@+id/locationTextView"
         app:srcCompat="@drawable/ic_baseline_insert_photo_24" />
 
     <Spinner
@@ -110,5 +111,14 @@
         app:layout_constraintBottom_toBottomOf="@+id/changeDateButton"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/changeDateButton" />
+
+    <TextView
+        android:id="@+id/locationTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="-1dp"
+        android:text="brak lokalizacji"
+        app:layout_constraintStart_toStartOf="@+id/button"
+        app:layout_constraintTop_toBottomOf="@+id/button" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

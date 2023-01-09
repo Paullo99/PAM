@@ -2,10 +2,12 @@ package com.example.mountaineer
 
 import android.annotation.SuppressLint
 import android.content.Intent
+import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.activity.result.contract.ActivityResultContracts
@@ -103,6 +105,17 @@ class DetailedExpeditionActivity : AppCompatActivity() {
     }
 
     private val editMountainExpeditionActivityLauncher = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) {}
+
+    fun showOnMap(view: View?){
+        val geoCode =
+            "geo:" + mountainExpedition.latitude.toString() + "," + mountainExpedition.longitude.toString() + "?z=16"
+        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(geoCode))
+        showOnMapActivityLauncher.launch(intent)
+    }
+
+    private val showOnMapActivityLauncher = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
     ) {}
 }

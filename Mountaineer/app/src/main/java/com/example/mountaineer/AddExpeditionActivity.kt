@@ -1,6 +1,7 @@
 package com.example.mountaineer
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.DatePickerDialog
 import android.app.Dialog
@@ -40,9 +41,12 @@ class AddExpeditionActivity : AppCompatActivity() {
     private lateinit var mountainRangeSpinner: Spinner
     private lateinit var mountainHeightEditText: EditText
     private lateinit var conquerDateTextView: TextView
+    private lateinit var locationTextView: TextView
     private lateinit var calendar: Calendar
     private lateinit var photoImageView: ImageView
     private var photoFileName: String = ""
+    private var latitude : Double? = null
+    private var longitude : Double? = null
     private lateinit var photoFile: File
     private var permission by Delegates.notNull<Int>()
     private lateinit var viewModel: AddExpeditionActivityViewModel
@@ -59,6 +63,7 @@ class AddExpeditionActivity : AppCompatActivity() {
         mountainHeightEditText = findViewById(R.id.mountainHeightEditText)
         conquerDateTextView = findViewById(R.id.conquerDateEditText)
         photoImageView = findViewById(R.id.photoImageView)
+        locationTextView = findViewById(R.id.locationTextView)
 
         calendar = Calendar.getInstance()
 
@@ -118,6 +123,8 @@ class AddExpeditionActivity : AppCompatActivity() {
                     mountainRangeId = mountainRangeDao.getMountainRangeIdByName(mountainRangeSpinner.selectedItem.toString()),
                     mountainHeight = Integer.parseInt(mountainHeightEditText.text.toString()),
                     conquerDate = conquerDateTextView.text.toString(),
+                    latitude = latitude,
+                    longitude = longitude,
                     photoFileName = photoFileName
                 )
                 mountainExpeditionDao.insert(mountainExpedition)
@@ -133,6 +140,8 @@ class AddExpeditionActivity : AppCompatActivity() {
         return mountainNameEditText.text.toString() != ""
                 && mountainHeightEditText.text.toString() != ""
                 && conquerDateTextView.text.toString() != ""
+                && longitude != null
+                && latitude != null
     }
 
     fun takePhoto(view: View?) {
@@ -160,13 +169,16 @@ class AddExpeditionActivity : AppCompatActivity() {
         mapsActivityLauncher.launch(intent)
     }
 
+    @SuppressLint("SetTextI18n")
     private val mapsActivityLauncher = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
     ) {
         if (it.resultCode == Activity.RESULT_OK) {
-            Toast.makeText(this, it.data?.extras?.get("longitude").toString(), Toast.LENGTH_SHORT).show()
-
-
+            latitude = it.data?.extras?.get("latitude") as Double?
+            longitude = it.data?.extras?.get("longitude") as Double?
+            locationTextView.text = "$latitude\n$longitude"
+        } else {
+            Toast.makeText(this, "Nie wybrano lokalizacji", Toast.LENGTH_SHORT).show()
         }
     }
 

@@ -3,8 +3,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_margin="20dp"
     android:layout_height="wrap_content"
+    android:layout_margin="20dp"
     android:background="@drawable/item_background"
     tools:context=".DetailedExpeditionActivity">
 
@@ -92,11 +92,22 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
+        app:layout_constraintBottom_toTopOf="@+id/showOnMapButton"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/arrowIV"
+        app:srcCompat="@drawable/ic_baseline_insert_photo_24" />
+
+    <Button
+        android:id="@+id/showOnMapButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:onClick="showOnMap"
+        android:text="Pokaż na mapie"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.498"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/calendarIV"
-        app:srcCompat="@drawable/ic_baseline_insert_photo_24" />
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
