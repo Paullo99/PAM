@@ -22,6 +22,7 @@ import androidx.room.Room
 import com.example.mountaineer.dao.MountainExpeditionDao
 import com.example.mountaineer.dao.MountainRangeDao
 import com.example.mountaineer.database.AppDatabase
+import com.example.mountaineer.databinding.ActivityAddExpeditionBinding
 import com.example.mountaineer.helper.ImageRotator
 import com.example.mountaineer.model.MountainExpedition
 import com.example.mountaineer.model.MountainRange
@@ -37,16 +38,11 @@ class AddExpeditionActivity : AppCompatActivity() {
 
     private lateinit var mountainExpeditionDao: MountainExpeditionDao
     private lateinit var mountainRangeDao: MountainRangeDao
-    private lateinit var mountainNameEditText: EditText
-    private lateinit var mountainRangeSpinner: Spinner
-    private lateinit var mountainHeightEditText: EditText
-    private lateinit var conquerDateTextView: TextView
-    private lateinit var locationTextView: TextView
+    private lateinit var binding: ActivityAddExpeditionBinding
     private lateinit var calendar: Calendar
-    private lateinit var photoImageView: ImageView
     private var photoFileName: String = ""
-    private var latitude : Double? = null
-    private var longitude : Double? = null
+    private var latitude: Double? = null
+    private var longitude: Double? = null
     private lateinit var photoFile: File
     private var permission by Delegates.notNull<Int>()
     private lateinit var viewModel: AddExpeditionActivityViewModel
@@ -56,29 +52,23 @@ class AddExpeditionActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         title = "Nowy zdobyty szczyt"
-        setContentView(R.layout.activity_add_expedition)
-
-        mountainNameEditText = findViewById(R.id.mountainNameEditText)
-        mountainRangeSpinner = findViewById(R.id.mountainRangeSpinner)
-        mountainHeightEditText = findViewById(R.id.mountainHeightEditText)
-        conquerDateTextView = findViewById(R.id.conquerDateEditText)
-        photoImageView = findViewById(R.id.photoImageView)
-        locationTextView = findViewById(R.id.locationTextView)
+        binding = ActivityAddExpeditionBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
         calendar = Calendar.getInstance()
 
         viewModel = ViewModelProvider(this)[AddExpeditionActivityViewModel::class.java]
-        mountainNameEditText.setText(viewModel.mountainName)
-        mountainHeightEditText.setText(viewModel.height)
-        mountainRangeSpinner.setSelection(viewModel.mountainRangePosiotion)
-        conquerDateTextView.text = viewModel.conquerDate
-        if(viewModel.photoFileName!=""){
+
+        binding.mountainNameEditText.setText(viewModel.mountainName)
+        binding.mountainHeightEditText.setText(viewModel.height)
+        binding.mountainRangeSpinner.setSelection(viewModel.mountainRangePosiotion)
+        binding.conquerDateEditText.text = viewModel.conquerDate
+        if (viewModel.photoFileName != "") {
             photoFileName = viewModel.photoFileName
             photoFile = File(getExternalFilesDir(null), photoFileName)
             val imageRotator = ImageRotator()
-            photoImageView.setImageBitmap(imageRotator.getImageOriginalOrientation(photoFile))
+            binding.photoImageView.setImageBitmap(imageRotator.getImageOriginalOrientation(photoFile))
         }
-
 
         val db = Room.databaseBuilder(
             applicationContext,
@@ -91,9 +81,10 @@ class AddExpeditionActivity : AppCompatActivity() {
         runBlocking {
             mountainRanges = mountainRangeDao.getAllMountainRanges()
         }
-        mountainRangeAdapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, mountainRanges)
+        mountainRangeAdapter =
+            ArrayAdapter(this, android.R.layout.simple_spinner_item, mountainRanges)
         mountainRangeAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-        mountainRangeSpinner.adapter = mountainRangeAdapter
+        binding.mountainRangeSpinner.adapter = mountainRangeAdapter
     }
 
     fun changeDate(view: View?) {
@@ -108,7 +99,7 @@ class AddExpeditionActivity : AppCompatActivity() {
 
             override fun onDateSet(view: DatePicker, year: Int, month: Int, day: Int) {
                 val finalString = "$year-%02d-%02d".format(month + 1, day)
-                conquerDateTextView.text = finalString
+                binding.conquerDateEditText.text = finalString
                 viewModel.conquerDate = finalString
             }
         }
@@ -119,10 +110,10 @@ class AddExpeditionActivity : AppCompatActivity() {
         if (checkIfAllInputsAreFilled()) {
             runBlocking {
                 val mountainExpedition = MountainExpedition(
-                    mountainName = mountainNameEditText.text.toString(),
-                    mountainRangeId = mountainRangeDao.getMountainRangeIdByName(mountainRangeSpinner.selectedItem.toString()),
-                    mountainHeight = Integer.parseInt(mountainHeightEditText.text.toString()),
-                    conquerDate = conquerDateTextView.text.toString(),
+                    mountainName = binding.mountainNameEditText.text.toString(),
+                    mountainRangeId = mountainRangeDao.getMountainRangeIdByName(binding.mountainRangeSpinner.selectedItem.toString()),
+                    mountainHeight = Integer.parseInt(binding.mountainHeightEditText.text.toString()),
+                    conquerDate = binding.conquerDateEditText.text.toString(),
                     latitude = latitude,
                     longitude = longitude,
                     photoFileName = photoFileName
@@ -137,9 +128,9 @@ class AddExpeditionActivity : AppCompatActivity() {
     }
 
     private fun checkIfAllInputsAreFilled(): Boolean {
-        return mountainNameEditText.text.toString() != ""
-                && mountainHeightEditText.text.toString() != ""
-                && conquerDateTextView.text.toString() != ""
+        return binding.mountainNameEditText.text.toString() != ""
+                && binding.mountainHeightEditText.text.toString() != ""
+                && binding.conquerDateEditText.text.toString() != ""
                 && longitude != null
                 && latitude != null
     }
@@ -164,7 +155,7 @@ class AddExpeditionActivity : AppCompatActivity() {
         }
     }
 
-    fun openMaps(view: View?){
+    fun openMaps(view: View?) {
         val intent = Intent(this, PickPlaceFromMapsActivity::class.java)
         mapsActivityLauncher.launch(intent)
     }
@@ -176,7 +167,7 @@ class AddExpeditionActivity : AppCompatActivity() {
         if (it.resultCode == Activity.RESULT_OK) {
             latitude = it.data?.extras?.get("latitude") as Double?
             longitude = it.data?.extras?.get("longitude") as Double?
-            locationTextView.text = "$latitude\n$longitude"
+            binding.locationTextView.text = "$latitude\n$longitude"
         } else {
             Toast.makeText(this, "Nie wybrano lokalizacji", Toast.LENGTH_SHORT).show()
         }
@@ -188,7 +179,7 @@ class AddExpeditionActivity : AppCompatActivity() {
         if (it.resultCode == Activity.RESULT_OK) {
             photoFile = File(getExternalFilesDir(null), photoFileName)
             val imageRotator = ImageRotator()
-            photoImageView.setImageBitmap(imageRotator.getImageOriginalOrientation(photoFile))
+            binding.photoImageView.setImageBitmap(imageRotator.getImageOriginalOrientation(photoFile))
         } else {
             photoFileName = ""
         }

@@ -3,12 +3,11 @@ package com.example.mountaineer
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
-import android.widget.TextView
-import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.room.Room
 import com.example.mountaineer.dao.MountainExpeditionDao
 import com.example.mountaineer.dao.MountainRangeDao
 import com.example.mountaineer.database.AppDatabase
+import com.example.mountaineer.databinding.ActivityStatisticsBinding
 import com.example.mountaineer.model.MountainExpedition
 import kotlinx.coroutines.runBlocking
 
@@ -16,23 +15,13 @@ class StatisticsActivity : AppCompatActivity() {
 
     private lateinit var mountainExpeditionDao: MountainExpeditionDao
     private lateinit var mountainRangeDao: MountainRangeDao
-    private lateinit var amountTV: TextView
-    private lateinit var highestTV: TextView
-    private lateinit var mostVisitedRangeTV: TextView
-    private lateinit var statisticsConstraintLayout: ConstraintLayout
-    private lateinit var noStatisticsTV: TextView
+    private lateinit var binding: ActivityStatisticsBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_statistics)
+        binding = ActivityStatisticsBinding.inflate(layoutInflater)
+        setContentView(binding.root)
         title = "Statystyki"
-
-        amountTV = findViewById(R.id.amountTV)
-        highestTV = findViewById(R.id.highestTV)
-        mostVisitedRangeTV = findViewById(R.id.mostVisitedRangeTV)
-        statisticsConstraintLayout = findViewById(R.id.statisticsConstraintLayout)
-        noStatisticsTV = findViewById(R.id.noStatisticsTV)
-
 
         val db = Room.databaseBuilder(
             applicationContext,
@@ -42,23 +31,24 @@ class StatisticsActivity : AppCompatActivity() {
         mountainExpeditionDao = db.mountainExpeditionDao()
         mountainRangeDao = db.mountainRangeDao()
 
-        if(getAmount()==0){
-            statisticsConstraintLayout.visibility = View.INVISIBLE
-            noStatisticsTV.visibility = View.VISIBLE
-        } else{
-            statisticsConstraintLayout.visibility = View.VISIBLE
-            noStatisticsTV.visibility = View.INVISIBLE
-            amountTV.text = getAmount().toString()
-            highestTV.text = "${getHighestMountain().mountainName}\n(${getHighestMountain().mountainHeight} m n.p.m.)"
-            mostVisitedRangeTV.text = getMostVisitedRange()
+        if (getAmount() == 0) {
+            binding.statisticsConstraintLayout.visibility = View.INVISIBLE
+            binding.noStatisticsTV.visibility = View.VISIBLE
+        } else {
+            binding.statisticsConstraintLayout.visibility = View.VISIBLE
+            binding.noStatisticsTV.visibility = View.INVISIBLE
+            binding.amountTV.text = getAmount().toString()
+            binding.highestTV.text =
+                "${getHighestMountain().mountainName}\n(${getHighestMountain().mountainHeight} m n.p.m.)"
+            binding.mostVisitedRangeTV.text = getMostVisitedRange()
         }
 
     }
 
-    private fun getAmount(): Int{
+    private fun getAmount(): Int {
         var amount: Int
         runBlocking {
-        amount =  mountainExpeditionDao.countMountainExpeditions()
+            amount = mountainExpeditionDao.countMountainExpeditions()
         }
         return amount
     }
@@ -71,11 +61,12 @@ class StatisticsActivity : AppCompatActivity() {
         return mountainExpedition
     }
 
-    private fun getMostVisitedRange(): String{
+    private fun getMostVisitedRange(): String {
         var mountainRange: String
         runBlocking {
             mountainRange =
-                mountainRangeDao.getMountainRangeNameById(mountainExpeditionDao.getMostVisited()).toString()
+                mountainRangeDao.getMountainRangeNameById(mountainExpeditionDao.getMostVisited())
+                    .toString()
         }
         return mountainRange
     }
