@@ -6,18 +6,16 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
-import androidx.core.content.res.ResourcesCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.example.mountaineer.R
 import com.example.mountaineer.helper.ImageRotator
 import com.example.mountaineer.model.MountainExpedition
 import java.io.File
-import kotlin.coroutines.coroutineContext
 
-class MainActivityRVAdapter(private val dataset: List<MountainExpedition>, val onItemClickListener: OnItemClickListener, val context: Context) :
+class MainActivityRVAdapter(private val dataset: List<MountainExpedition>, private val onItemClickListener: OnItemClickListener, val context: Context) :
     RecyclerView.Adapter<MainActivityRVAdapter.ItemViewHolder>() {
 
-    class ItemViewHolder(private val view: View, listener: OnItemClickListener) : RecyclerView.ViewHolder(view) {
+    class ItemViewHolder(view: View, listener: OnItemClickListener) : RecyclerView.ViewHolder(view) {
         val mountainNameTextView: TextView = view.findViewById(R.id.mountainNameTextView)
         val conquerDateTextView: TextView = view.findViewById(R.id.conquerDateTextView)
         val imageView: ImageView = view.findViewById(R.id.imageView)
