@@ -63,6 +63,10 @@ class AddExpeditionActivity : AppCompatActivity() {
         binding.mountainHeightEditText.setText(viewModel.height)
         binding.mountainRangeSpinner.setSelection(viewModel.mountainRangePosiotion)
         binding.conquerDateEditText.text = viewModel.conquerDate
+        if (viewModel.latitude == null)
+            binding.locationTextView.setText("brak lokalizacji")
+        else binding.locationTextView.setText("${viewModel.latitude}\n" +
+                "${viewModel.longitude}")
         if (viewModel.photoFileName != "") {
             photoFileName = viewModel.photoFileName
             photoFile = File(getExternalFilesDir(null), photoFileName)
@@ -168,6 +172,8 @@ class AddExpeditionActivity : AppCompatActivity() {
             latitude = it.data?.extras?.get("latitude") as Double?
             longitude = it.data?.extras?.get("longitude") as Double?
             binding.locationTextView.text = "$latitude\n$longitude"
+            viewModel.latitude = latitude
+            viewModel.longitude = longitude
         } else {
             Toast.makeText(this, "Nie wybrano lokalizacji", Toast.LENGTH_SHORT).show()
         }

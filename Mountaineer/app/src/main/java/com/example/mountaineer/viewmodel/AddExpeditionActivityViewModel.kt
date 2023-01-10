@@ -10,6 +10,8 @@ class AddExpeditionActivityViewModel : ViewModel(){
     var height = ""
     var conquerDate = setTodayDate()
     var photoFileName = ""
+    var latitude: Double? = null
+    var longitude: Double? = null
 
     private fun setTodayDate(): String{
         val calendar = Calendar.getInstance()
